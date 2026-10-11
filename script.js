@@ -1214,13 +1214,38 @@ async function saveThemeToServer(theme) {
   return false;
 }
 
-// Sincronização Automática com theme.json na Inicialização
+// Sincronização Inteligente com theme.json na Inicialização
 async function syncThemeFromServer() {
   try {
+    // 1. Verifica se já existe um tema salvo pelo usuário no localStorage
+    const savedRaw = localStorage.getItem('dash_site_content');
+    let localTheme = null;
+    if (savedRaw) {
+      try {
+        const parsed = JSON.parse(savedRaw);
+        if (parsed && parsed.theme && parsed.theme.primaryColor) {
+          localTheme = parsed.theme;
+        }
+      } catch (e) { }
+    }
+
     const res = await fetch('theme.json?v=' + Date.now(), { cache: 'no-store' });
     if (res.ok) {
       const serverTheme = await res.json();
       if (serverTheme && serverTheme.primaryColor) {
+        // Se o usuário já tiver um tema no localStorage, só substitui se o tema do servidor for estritamente mais recente
+        if (localTheme && localTheme.primaryColor) {
+          const serverTime = serverTheme.updatedAt ? new Date(serverTheme.updatedAt).getTime() : 0;
+          const localTime = localTheme.updatedAt ? new Date(localTheme.updatedAt).getTime() : 0;
+
+          // Se o tema local tem timestamp mais recente ou igual, preserva a escolha do usuário!
+          if (localTime >= serverTime) {
+            console.log('[CMS] Tema local (localStorage) é prioritário. Mantendo:', localTheme.preset || 'custom');
+            return;
+          }
+        }
+
+        // Se não havia tema no localStorage ou o theme.json do servidor for mais recente:
         siteContent.theme = { ...defaultSiteContent.theme, ...serverTheme };
         currentDraftTheme = { ...siteContent.theme };
         localStorage.setItem('dash_site_content', JSON.stringify(siteContent));
@@ -1258,11 +1283,12 @@ let themeAutoSaveTimer = null;
 // Função Mestra de Commit e Persistência Imediata de Tema
 function commitAndPersistTheme(themeObj, showToastMsg = null) {
   if (!themeObj) return;
-  const theme = { ...defaultSiteContent.theme, ...themeObj };
+  const now = new Date().toISOString();
+  const theme = { ...defaultSiteContent.theme, ...themeObj, updatedAt: now };
   siteContent.theme = { ...theme };
   currentDraftTheme = { ...theme };
 
-  // 1. Salva imediatamente no localStorage (sem perdas entre reloads)
+  // 1. Salva imediatamente no localStorage (com timestamp atualizado para nunca ser sobrescrito)
   localStorage.setItem('dash_site_content', JSON.stringify(siteContent));
 
   // 2. Aplica variáveis CSS instantaneamente no DOM

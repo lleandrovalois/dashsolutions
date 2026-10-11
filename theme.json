@@ -1,11 +1,11 @@
 {
-  "preset": "titanium",
-  "primaryColor": "#CBD5E1",
-  "secondaryColor": "#F1F5F9",
-  "darkAccent": "#94A3B8",
-  "bgMain": "#0F172A",
-  "bgDeep": "#020617",
-  "bgSurface": "#1E293B",
-  "name": "Titânio & Prata Real",
-  "updatedAt": "2026-10-11T02:39:22.845Z"
+  "preset": "default",
+  "primaryColor": "#B9915B",
+  "secondaryColor": "#C9A96E",
+  "darkAccent": "#977342",
+  "bgMain": "#001F35",
+  "bgDeep": "#01121E",
+  "bgSurface": "#06263F",
+  "name": "Ouro & Marinho Nobre",
+  "updatedAt": "2026-10-11T03:00:00.000Z"
 }
