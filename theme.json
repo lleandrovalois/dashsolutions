@@ -1,11 +1,11 @@
 {
-  "preset": "emerald",
-  "primaryColor": "#10B981",
-  "secondaryColor": "#34D399",
-  "darkAccent": "#059669",
-  "bgMain": "#062822",
-  "bgDeep": "#021411",
-  "bgSurface": "#0A3830",
-  "name": "Esmeralda & Noite Tech",
-  "updatedAt": "2026-10-08T12:53:47.166Z"
+  "preset": "titanium",
+  "primaryColor": "#CBD5E1",
+  "secondaryColor": "#F1F5F9",
+  "darkAccent": "#94A3B8",
+  "bgMain": "#0F172A",
+  "bgDeep": "#020617",
+  "bgSurface": "#1E293B",
+  "name": "Titânio & Prata Real",
+  "updatedAt": "2026-10-11T02:39:22.845Z"
 }

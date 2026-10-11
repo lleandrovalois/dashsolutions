@@ -224,7 +224,7 @@ const defaultSiteContent = {
     companyEmail: "contato@dashsolutions.com.br",
     phoneTitle: "Telefone & WhatsApp",
     companyPhone: "+55 (11) 99999-9999",
-    companyPhoneLink: "https://wa.me/5591987325580",
+    companyPhoneLink: "https://wa.me/+5591983017799",
     formTitle: "Solicite uma Proposta sob Medida",
     formSubtitle: "Preencha os campos abaixo. Retornamos em menos de 2 horas em dias úteis.",
     formButtonText: "Enviar Solicitação de Diagnóstico"
@@ -580,8 +580,8 @@ function loadStoredSiteContent() {
       }
 
       // Migração e garantia de métricas com ID
-      let metrics = parsed.metrics && parsed.metrics.length 
-        ? parsed.metrics.map((m, idx) => ({ ...m, id: m.id || `m-${idx + 1}` })) 
+      let metrics = parsed.metrics && parsed.metrics.length
+        ? parsed.metrics.map((m, idx) => ({ ...m, id: m.id || `m-${idx + 1}` }))
         : JSON.parse(JSON.stringify(defaultSiteContent.metrics));
 
       // Selos de confiança do Hero
@@ -681,8 +681,8 @@ function buildBrandLogoHTML(brand, options = {}) {
     const first = escapeHtml(brand.nameFirst !== undefined ? brand.nameFirst : 'DASH');
     const second = escapeHtml(brand.nameSecond !== undefined ? brand.nameSecond : 'SOLUTIONS');
     const titleHtml = `<span class="title">${first} <span>${second}</span></span>`;
-    const subtitleHtml = (brand.showTagline !== false && brand.tagline) 
-      ? `<span class="subtitle">${escapeHtml(brand.tagline)}</span>` 
+    const subtitleHtml = (brand.showTagline !== false && brand.tagline)
+      ? `<span class="subtitle">${escapeHtml(brand.tagline)}</span>`
       : '';
     textMarkup = `
       <div class="logo-text">
@@ -745,7 +745,7 @@ function renderBrandLogo() {
 
 let currentEditingBrandType = 'monogram';
 
-window.openBrandEditorModal = function() {
+window.openBrandEditorModal = function () {
   closeAdminDrawer();
   populateBrandInputs();
   updateBrandLivePreview();
@@ -754,13 +754,13 @@ window.openBrandEditorModal = function() {
   document.body.style.overflow = 'hidden';
 };
 
-window.closeBrandEditorModal = function() {
+window.closeBrandEditorModal = function () {
   const modal = document.getElementById('brand-editor-modal');
   modal?.classList.remove('active');
   document.body.style.overflow = '';
 };
 
-window.setBrandType = function(type) {
+window.setBrandType = function (type) {
   currentEditingBrandType = type;
   const btnMono = document.getElementById('btn-type-monogram');
   const btnImg = document.getElementById('btn-type-image');
@@ -781,7 +781,7 @@ window.setBrandType = function(type) {
   updateBrandLivePreview();
 };
 
-window.populateBrandInputs = function() {
+window.populateBrandInputs = function () {
   const brand = getActiveBrand();
   currentEditingBrandType = brand.logoType || 'monogram';
   setBrandType(currentEditingBrandType);
@@ -825,7 +825,7 @@ window.populateBrandInputs = function() {
   }
 };
 
-window.inspectAndDisplayLogoDimensions = function(url) {
+window.inspectAndDisplayLogoDimensions = function (url) {
   const feedbackEl = document.getElementById('brand-logo-dimensions-feedback');
   if (!feedbackEl) return;
 
@@ -836,7 +836,7 @@ window.inspectAndDisplayLogoDimensions = function(url) {
   }
 
   const testImg = new Image();
-  testImg.onload = function() {
+  testImg.onload = function () {
     const w = testImg.naturalWidth;
     const h = testImg.naturalHeight;
     const isSvg = url.includes('image/svg') || url.toLowerCase().endsWith('.svg');
@@ -906,14 +906,14 @@ window.inspectAndDisplayLogoDimensions = function(url) {
     `;
   };
 
-  testImg.onerror = function() {
+  testImg.onerror = function () {
     feedbackEl.style.display = 'none';
   };
 
   testImg.src = url;
 };
 
-window.updateBrandLivePreview = function() {
+window.updateBrandLivePreview = function () {
   const brandObj = {
     logoType: currentEditingBrandType,
     monogramText: document.getElementById('brand-monogram-text-input')?.value.trim() || 'DS',
@@ -948,7 +948,7 @@ window.updateBrandLivePreview = function() {
   if (drawerPreview) drawerPreview.innerHTML = previewHtml;
 };
 
-window.handleLogoFileUpload = function(event) {
+window.handleLogoFileUpload = function (event) {
   const file = event.target.files?.[0];
   if (!file) return;
 
@@ -958,7 +958,7 @@ window.handleLogoFileUpload = function(event) {
   }
 
   const reader = new FileReader();
-  reader.onload = function(e) {
+  reader.onload = function (e) {
     const dataUrl = e.target.result;
     const urlInput = document.getElementById('brand-logo-url-input');
     if (urlInput) urlInput.value = dataUrl;
@@ -970,7 +970,7 @@ window.handleLogoFileUpload = function(event) {
   reader.readAsDataURL(file);
 };
 
-window.clearLogoImage = function() {
+window.clearLogoImage = function () {
   const urlInput = document.getElementById('brand-logo-url-input');
   if (urlInput) urlInput.value = '';
   const filePicker = document.getElementById('brand-logo-file-picker');
@@ -981,7 +981,7 @@ window.clearLogoImage = function() {
   showToast('Imagem removida. Modo monograma ativado.');
 };
 
-window.saveBrandFromForm = function() {
+window.saveBrandFromForm = function () {
   const brandObj = {
     logoType: currentEditingBrandType,
     monogramText: document.getElementById('brand-monogram-text-input')?.value.trim() || 'DS',
@@ -1007,7 +1007,7 @@ window.saveBrandFromForm = function() {
   showToast('Identidade visual e logotipo atualizados com sucesso!');
 };
 
-window.resetBrandToDefault = function() {
+window.resetBrandToDefault = function () {
   if (confirm('Deseja restaurar a identidade visual e o logotipo para o padrão original da Dash Solutions?')) {
     siteContent.brand = JSON.parse(JSON.stringify(defaultSiteContent.brand));
     localStorage.setItem('dash_site_content', JSON.stringify(siteContent));
@@ -1286,7 +1286,7 @@ function commitAndPersistTheme(themeObj, showToastMsg = null) {
 function applyTheme(themeObj, isPreview = false) {
   if (!themeObj) return;
   const theme = { ...defaultSiteContent.theme, ...themeObj };
-  
+
   const primaryRgb = hexToRgb(theme.primaryColor);
   const secondaryRgb = hexToRgb(theme.secondaryColor);
   const darkAccentRgb = hexToRgb(theme.darkAccent || darkenHex(theme.primaryColor, 20));
@@ -1295,7 +1295,7 @@ function applyTheme(themeObj, isPreview = false) {
   const bgSurfaceRgb = hexToRgb(theme.bgSurface);
 
   const root = document.documentElement;
-  
+
   // 1. Tokens de canais RGB
   root.style.setProperty('--primary-rgb', primaryRgb.str);
   root.style.setProperty('--secondary-rgb', secondaryRgb.str);
@@ -1342,19 +1342,19 @@ function updateThemePreviewShowcase(theme) {
   }
 }
 
-window.openThemeCustomizerModal = function() {
+window.openThemeCustomizerModal = function () {
   closeAdminDrawer();
   currentDraftTheme = JSON.parse(JSON.stringify(getActiveTheme()));
   renderThemePresets();
   populateThemeInputs(currentDraftTheme);
   applyTheme(currentDraftTheme, true);
-  
+
   const modal = document.getElementById('theme-customizer-modal');
   modal?.classList.add('active');
   document.body.style.overflow = 'hidden';
 };
 
-window.closeThemeCustomizerModal = function() {
+window.closeThemeCustomizerModal = function () {
   clearTimeout(themeAutoSaveTimer);
   if (currentDraftTheme) {
     commitAndPersistTheme(currentDraftTheme);
@@ -1364,14 +1364,14 @@ window.closeThemeCustomizerModal = function() {
   document.body.style.overflow = '';
 };
 
-window.cancelThemeChanges = function() {
+window.cancelThemeChanges = function () {
   applyTheme(getActiveTheme());
   const modal = document.getElementById('theme-customizer-modal');
   modal?.classList.remove('active');
   document.body.style.overflow = '';
 };
 
-window.saveThemeChanges = function() {
+window.saveThemeChanges = function () {
   clearTimeout(themeAutoSaveTimer);
   if (!currentDraftTheme) currentDraftTheme = { ...getActiveTheme() };
   commitAndPersistTheme(currentDraftTheme, '🎨 Identidade visual e paleta de cores salvas com sucesso em todo o site!');
@@ -1380,7 +1380,7 @@ window.saveThemeChanges = function() {
   document.body.style.overflow = '';
 };
 
-window.resetThemeToDefault = function() {
+window.resetThemeToDefault = function () {
   if (confirm('Deseja restaurar as cores do site para a paleta padrão (Ouro & Marinho Nobre)?')) {
     const defaultPreset = THEME_PRESETS[0];
     const defTheme = {
@@ -1397,7 +1397,7 @@ window.resetThemeToDefault = function() {
   }
 };
 
-window.selectThemePreset = function(presetId) {
+window.selectThemePreset = function (presetId) {
   const preset = THEME_PRESETS.find(p => p.id === presetId);
   if (!preset) return;
 
@@ -1415,7 +1415,7 @@ window.selectThemePreset = function(presetId) {
   commitAndPersistTheme(newTheme, `🎨 Paleta "${preset.name}" aplicada e salva com sucesso!`);
 };
 
-window.handleCustomColorInput = function(prop, val) {
+window.handleCustomColorInput = function (prop, val) {
   if (!currentDraftTheme) currentDraftTheme = { ...getActiveTheme() };
   currentDraftTheme[prop] = val;
   currentDraftTheme.preset = "custom";
@@ -1444,7 +1444,7 @@ window.handleCustomColorInput = function(prop, val) {
   }, 400);
 };
 
-window.handleCustomColorHexInput = function(prop, rawVal) {
+window.handleCustomColorHexInput = function (prop, rawVal) {
   let val = rawVal.trim();
   if (!val.startsWith('#')) val = '#' + val;
   if (/^#[0-9A-Fa-f]{6}$/.test(val)) {
@@ -1455,7 +1455,7 @@ window.handleCustomColorHexInput = function(prop, rawVal) {
   }
 };
 
-window.autoHarmonizeCurrentTheme = function() {
+window.autoHarmonizeCurrentTheme = function () {
   if (!currentDraftTheme) currentDraftTheme = { ...getActiveTheme() };
   const primaryHex = currentDraftTheme.primaryColor || '#B9915B';
   const { r, g, b } = hexToRgb(primaryHex);
@@ -1504,7 +1504,7 @@ function populateThemeInputs(theme) {
 
 function renderThemePresets() {
   const activeTheme = currentDraftTheme || getActiveTheme();
-  
+
   const generateCardsHTML = (isDrawer = false) => {
     return THEME_PRESETS.map(preset => {
       const isActive = activeTheme.preset === preset.id;
@@ -2087,7 +2087,7 @@ function closeAdminDrawer() {
    ========================================================================== */
 let editingMetricIndex = null;
 
-window.openSingleMetricModal = function(index = null) {
+window.openSingleMetricModal = function (index = null) {
   closeAdminDrawer();
   editingMetricIndex = (index !== null && index >= 0) ? index : null;
   const modal = document.getElementById('single-metric-editor-modal');
@@ -2114,13 +2114,13 @@ window.openSingleMetricModal = function(index = null) {
   document.body.style.overflow = 'hidden';
 };
 
-window.closeSingleMetricModal = function() {
+window.closeSingleMetricModal = function () {
   const modal = document.getElementById('single-metric-editor-modal');
   modal?.classList.remove('active');
   document.body.style.overflow = '';
 };
 
-window.saveSingleMetricFromForm = function() {
+window.saveSingleMetricFromForm = function () {
   const val = document.getElementById('single-metric-val')?.value.trim();
   const label = document.getElementById('single-metric-label')?.value.trim();
   const desc = document.getElementById('single-metric-desc')?.value.trim() || '';
@@ -2156,7 +2156,7 @@ window.saveSingleMetricFromForm = function() {
   closeSingleMetricModal();
 };
 
-window.deleteMetric = function(index) {
+window.deleteMetric = function (index) {
   const m = siteContent.metrics || [];
   if (!m[index]) return;
 
@@ -2169,7 +2169,7 @@ window.deleteMetric = function(index) {
   }
 };
 
-window.openMetricsEditorModal = function() {
+window.openMetricsEditorModal = function () {
   closeAdminDrawer();
   populateMetricsInputs();
   const modal = document.getElementById('metrics-editor-modal');
@@ -2177,7 +2177,7 @@ window.openMetricsEditorModal = function() {
   document.body.style.overflow = 'hidden';
 };
 
-window.closeMetricsEditorModal = function() {
+window.closeMetricsEditorModal = function () {
   const modal = document.getElementById('metrics-editor-modal');
   modal?.classList.remove('active');
   document.body.style.overflow = '';
@@ -2222,7 +2222,7 @@ function renderCMSMetricsList() {
   `).join('');
 }
 
-window.saveMetricsFromForm = function() {
+window.saveMetricsFromForm = function () {
   if (!siteContent.metrics) siteContent.metrics = [...defaultSiteContent.metrics];
   for (let i = 0; i < 4; i++) {
     const val = document.getElementById(`edit-metric-${i}-val`)?.value.trim() || '';
@@ -2253,7 +2253,7 @@ window.saveMetricsFromForm = function() {
    ========================================================================== */
 let editingPillarIndex = null;
 
-window.openSinglePillarModal = function(index = null) {
+window.openSinglePillarModal = function (index = null) {
   closeAdminDrawer();
   editingPillarIndex = (index !== null && index >= 0) ? index : null;
   const modal = document.getElementById('single-pillar-editor-modal');
@@ -2281,13 +2281,13 @@ window.openSinglePillarModal = function(index = null) {
   document.body.style.overflow = 'hidden';
 };
 
-window.closeSinglePillarModal = function() {
+window.closeSinglePillarModal = function () {
   const modal = document.getElementById('single-pillar-editor-modal');
   modal?.classList.remove('active');
   document.body.style.overflow = '';
 };
 
-window.saveSinglePillarFromForm = function() {
+window.saveSinglePillarFromForm = function () {
   const num = document.getElementById('single-pillar-num')?.value.trim() || '01';
   const title = document.getElementById('single-pillar-title')?.value.trim();
   const desc = document.getElementById('single-pillar-desc')?.value.trim();
@@ -2324,7 +2324,7 @@ window.saveSinglePillarFromForm = function() {
   closeSinglePillarModal();
 };
 
-window.deletePillar = function(index) {
+window.deletePillar = function (index) {
   const pillars = siteContent.about?.pillars || [];
   if (!pillars[index]) return;
 
@@ -2337,7 +2337,7 @@ window.deletePillar = function(index) {
   }
 };
 
-window.openAboutEditorModal = function() {
+window.openAboutEditorModal = function () {
   closeAdminDrawer();
   populateAboutInputs();
   const modal = document.getElementById('about-editor-modal');
@@ -2345,7 +2345,7 @@ window.openAboutEditorModal = function() {
   document.body.style.overflow = 'hidden';
 };
 
-window.closeAboutEditorModal = function() {
+window.closeAboutEditorModal = function () {
   const modal = document.getElementById('about-editor-modal');
   modal?.classList.remove('active');
   document.body.style.overflow = '';
@@ -2404,7 +2404,7 @@ function renderCMSPillarsList() {
   `).join('');
 }
 
-window.saveAboutFromForm = function() {
+window.saveAboutFromForm = function () {
   const getVal = (id) => document.getElementById(id)?.value.trim() || '';
 
   const techs = getVal('edit-ecosystem-techs')
@@ -2460,7 +2460,7 @@ window.saveAboutFromForm = function() {
    ========================================================================== */
 let editingStepIndex = null;
 
-window.openSingleStepModal = function(index = null) {
+window.openSingleStepModal = function (index = null) {
   closeAdminDrawer();
   editingStepIndex = (index !== null && index >= 0) ? index : null;
   const modal = document.getElementById('single-step-editor-modal');
@@ -2488,13 +2488,13 @@ window.openSingleStepModal = function(index = null) {
   document.body.style.overflow = 'hidden';
 };
 
-window.closeSingleStepModal = function() {
+window.closeSingleStepModal = function () {
   const modal = document.getElementById('single-step-editor-modal');
   modal?.classList.remove('active');
   document.body.style.overflow = '';
 };
 
-window.saveSingleStepFromForm = function() {
+window.saveSingleStepFromForm = function () {
   const num = document.getElementById('single-step-num')?.value.trim() || '01';
   const title = document.getElementById('single-step-title')?.value.trim();
   const desc = document.getElementById('single-step-desc')?.value.trim();
@@ -2531,7 +2531,7 @@ window.saveSingleStepFromForm = function() {
   closeSingleStepModal();
 };
 
-window.deleteStep = function(index) {
+window.deleteStep = function (index) {
   const steps = siteContent.framework?.steps || [];
   if (!steps[index]) return;
 
@@ -2544,7 +2544,7 @@ window.deleteStep = function(index) {
   }
 };
 
-window.openFrameworkEditorModal = function() {
+window.openFrameworkEditorModal = function () {
   closeAdminDrawer();
   populateFrameworkInputs();
   const modal = document.getElementById('framework-editor-modal');
@@ -2552,7 +2552,7 @@ window.openFrameworkEditorModal = function() {
   document.body.style.overflow = 'hidden';
 };
 
-window.closeFrameworkEditorModal = function() {
+window.closeFrameworkEditorModal = function () {
   const modal = document.getElementById('framework-editor-modal');
   modal?.classList.remove('active');
   document.body.style.overflow = '';
@@ -2606,7 +2606,7 @@ function renderCMSStepsList() {
   `).join('');
 }
 
-window.saveFrameworkFromForm = function() {
+window.saveFrameworkFromForm = function () {
   const getVal = (id) => document.getElementById(id)?.value.trim() || '';
 
   const currentSteps = [...(siteContent.framework?.steps || defaultSiteContent.framework.steps || [])];
@@ -2651,7 +2651,7 @@ window.saveFrameworkFromForm = function() {
    ========================================================================== */
 let editingBadgeIndex = null;
 
-window.openSingleBadgeModal = function(index = null) {
+window.openSingleBadgeModal = function (index = null) {
   closeAdminDrawer();
   editingBadgeIndex = (index !== null && index >= 0) ? index : null;
   const modal = document.getElementById('single-badge-editor-modal');
@@ -2675,13 +2675,13 @@ window.openSingleBadgeModal = function(index = null) {
   document.body.style.overflow = 'hidden';
 };
 
-window.closeSingleBadgeModal = function() {
+window.closeSingleBadgeModal = function () {
   const modal = document.getElementById('single-badge-editor-modal');
   modal?.classList.remove('active');
   document.body.style.overflow = '';
 };
 
-window.saveSingleBadgeFromForm = function() {
+window.saveSingleBadgeFromForm = function () {
   const text = document.getElementById('single-badge-text')?.value.trim();
   const icon = document.getElementById('single-badge-icon')?.value || 'shield';
 
@@ -2714,7 +2714,7 @@ window.saveSingleBadgeFromForm = function() {
   closeSingleBadgeModal();
 };
 
-window.deleteHeroBadge = function(index) {
+window.deleteHeroBadge = function (index) {
   const badges = siteContent.heroBadges || [];
   if (!badges[index]) return;
 
@@ -2751,7 +2751,7 @@ function renderCMSBadgesList() {
 /* ==========================================================================
    MODAIS PARA TEXTOS DAS SEÇÕES (PORTFÓLIO, HERO, CONTATO E RODAPÉ)
    ========================================================================== */
-window.openPortfolioHeaderModal = function() {
+window.openPortfolioHeaderModal = function () {
   closeAdminDrawer();
   const pf = siteContent.portfolioHeader || defaultSiteContent.portfolioHeader;
   const tagInput = document.getElementById('edit-portfolio-tag');
@@ -2767,13 +2767,13 @@ window.openPortfolioHeaderModal = function() {
   document.body.style.overflow = 'hidden';
 };
 
-window.closePortfolioHeaderModal = function() {
+window.closePortfolioHeaderModal = function () {
   const modal = document.getElementById('portfolio-header-editor-modal');
   modal?.classList.remove('active');
   document.body.style.overflow = '';
 };
 
-window.savePortfolioHeaderFromForm = function() {
+window.savePortfolioHeaderFromForm = function () {
   siteContent.portfolioHeader = {
     tag: document.getElementById('edit-portfolio-tag')?.value.trim() || 'PORTFÓLIO COMPLETO',
     title: document.getElementById('edit-portfolio-title')?.value.trim() || 'Soluções Corporativas',
@@ -2786,7 +2786,7 @@ window.savePortfolioHeaderFromForm = function() {
   showToast('Cabeçalho da seção de portfólio atualizado!');
 };
 
-window.openHeroTextsModal = function() {
+window.openHeroTextsModal = function () {
   closeAdminDrawer();
   const setVal = (ids, val) => {
     const idList = Array.isArray(ids) ? ids : [ids];
@@ -2816,13 +2816,13 @@ window.openHeroTextsModal = function() {
   document.body.style.overflow = 'hidden';
 };
 
-window.closeHeroTextsModal = function() {
+window.closeHeroTextsModal = function () {
   const modal = document.getElementById('hero-texts-editor-modal');
   modal?.classList.remove('active');
   document.body.style.overflow = '';
 };
 
-window.saveHeroTextsFromForm = function() {
+window.saveHeroTextsFromForm = function () {
   const getVal = (...ids) => {
     for (const id of ids) {
       const el = document.getElementById(id);
@@ -2855,7 +2855,7 @@ window.saveHeroTextsFromForm = function() {
   showToast('Textos e CTAs da Hero salvos com sucesso!');
 };
 
-window.openContactEditorModal = function() {
+window.openContactEditorModal = function () {
   closeAdminDrawer();
   const ct = siteContent.contact || defaultSiteContent.contact;
   const setVal = (ids, val) => {
@@ -2885,13 +2885,13 @@ window.openContactEditorModal = function() {
   document.body.style.overflow = 'hidden';
 };
 
-window.closeContactEditorModal = function() {
+window.closeContactEditorModal = function () {
   const modal = document.getElementById('contact-editor-modal');
   modal?.classList.remove('active');
   document.body.style.overflow = '';
 };
 
-window.saveContactFromForm = function() {
+window.saveContactFromForm = function () {
   const getVal = (...ids) => {
     for (const id of ids) {
       const el = document.getElementById(id);
@@ -2947,7 +2947,7 @@ window.saveContactFromForm = function() {
   showToast('Informações e formulário de contato salvos com sucesso!');
 };
 
-window.openFooterEditorModal = function() {
+window.openFooterEditorModal = function () {
   closeAdminDrawer();
   const ft = siteContent.footer || defaultSiteContent.footer;
   const brand = getActiveBrand();
@@ -2978,13 +2978,13 @@ window.openFooterEditorModal = function() {
   document.body.style.overflow = 'hidden';
 };
 
-window.closeFooterEditorModal = function() {
+window.closeFooterEditorModal = function () {
   const modal = document.getElementById('footer-editor-modal');
   modal?.classList.remove('active');
   document.body.style.overflow = '';
 };
 
-window.saveFooterFromForm = function() {
+window.saveFooterFromForm = function () {
   const getVal = (...ids) => {
     for (const id of ids) {
       const el = document.getElementById(id);
@@ -3025,7 +3025,7 @@ window.saveFooterFromForm = function() {
   showToast('Rodapé e redes sociais atualizados com sucesso!');
 };
 
-window.closeAllAdminModals = function() {
+window.closeAllAdminModals = function () {
   closeBrandEditorModal();
   closeAboutEditorModal();
   closeMetricsEditorModal();
@@ -3112,21 +3112,21 @@ function startCarouselAutoplay() {
   }, 5000);
 }
 
-window.nextCarouselSlide = function() {
+window.nextCarouselSlide = function () {
   const slides = siteContent.heroCarousel || defaultSiteContent.heroCarousel;
   if (!slides || slides.length <= 1) return;
   currentCarouselIndex = (currentCarouselIndex + 1) % slides.length;
   updateActiveCarouselSlide();
 };
 
-window.prevCarouselSlide = function() {
+window.prevCarouselSlide = function () {
   const slides = siteContent.heroCarousel || defaultSiteContent.heroCarousel;
   if (!slides || slides.length <= 1) return;
   currentCarouselIndex = (currentCarouselIndex - 1 + slides.length) % slides.length;
   updateActiveCarouselSlide();
 };
 
-window.goToCarouselSlide = function(idx) {
+window.goToCarouselSlide = function (idx) {
   currentCarouselIndex = idx;
   updateActiveCarouselSlide();
   startCarouselAutoplay();
@@ -3152,7 +3152,7 @@ function updateActiveCarouselSlide() {
    ========================================================================== */
 let editingCarouselSlides = [];
 
-window.openHeroCarouselEditorModal = function() {
+window.openHeroCarouselEditorModal = function () {
   closeAdminDrawer();
   const modal = document.getElementById('hero-carousel-editor-modal');
   populateCarouselEditor();
@@ -3160,7 +3160,7 @@ window.openHeroCarouselEditorModal = function() {
   document.body.style.overflow = 'hidden';
 };
 
-window.closeHeroCarouselEditorModal = function() {
+window.closeHeroCarouselEditorModal = function () {
   const modal = document.getElementById('hero-carousel-editor-modal');
   modal?.classList.remove('active');
   document.body.style.overflow = '';
@@ -3231,19 +3231,19 @@ function renderCarouselEditorList() {
   `).join('');
 }
 
-window.updateSlidePreviewFromInput = function(idx, val) {
+window.updateSlidePreviewFromInput = function (idx, val) {
   const preview = document.getElementById(`slide-preview-${idx}`);
   if (preview && val) {
     preview.src = val;
   }
 };
 
-window.handleSlideFileUpload = function(event, idx) {
+window.handleSlideFileUpload = function (event, idx) {
   const file = event.target.files?.[0];
   if (!file) return;
 
   const reader = new FileReader();
-  reader.onload = function(e) {
+  reader.onload = function (e) {
     const base64 = e.target.result;
     const urlInput = document.getElementById(`slide-img-url-${idx}`);
     const preview = document.getElementById(`slide-preview-${idx}`);
@@ -3257,7 +3257,7 @@ window.handleSlideFileUpload = function(event, idx) {
   reader.readAsDataURL(file);
 };
 
-window.setSlidePreset = function(idx, type) {
+window.setSlidePreset = function (idx, type) {
   const presets = {
     datacenter: 'assets/images/slide1-datacenter.jpg',
     software: 'assets/images/slide2-software-ai.jpg',
@@ -3276,7 +3276,7 @@ window.setSlidePreset = function(idx, type) {
   }
 };
 
-window.addNewCarouselSlide = function() {
+window.addNewCarouselSlide = function () {
   collectCurrentCarouselEditorInputs();
 
   editingCarouselSlides.push({
@@ -3291,7 +3291,7 @@ window.addNewCarouselSlide = function() {
   showToast('Novo slide adicionado! Personalize a imagem e o texto.');
 };
 
-window.removeCarouselSlide = function(idx) {
+window.removeCarouselSlide = function (idx) {
   if (editingCarouselSlides.length <= 1) {
     showToast('O carrossel precisa ter no mínimo 1 slide.');
     return;
@@ -3356,7 +3356,7 @@ function renderCMSPortfolioTable() {
   `).join('');
 }
 
-window.openCardEditorModal = function(cardId) {
+window.openCardEditorModal = function (cardId) {
   closeAdminDrawer();
   editingCardId = cardId;
   const modal = document.getElementById('card-editor-modal');
@@ -3383,7 +3383,7 @@ window.openCardEditorModal = function(cardId) {
   document.body.style.overflow = 'hidden';
 };
 
-window.closeCardEditorModal = function() {
+window.closeCardEditorModal = function () {
   const modal = document.getElementById('card-editor-modal');
   modal?.classList.remove('active');
   document.body.style.overflow = '';
@@ -3451,7 +3451,7 @@ function saveCardFromForm() {
   document.getElementById('portfolio')?.scrollIntoView({ behavior: 'smooth' });
 }
 
-window.deleteService = function(cardId) {
+window.deleteService = function (cardId) {
   const card = portfolioServices.find(s => s.id === cardId);
   if (!card) return;
 
@@ -3601,7 +3601,7 @@ function renderPortfolioCards() {
   const filtered = portfolioServices.filter(item => {
     const matchesCategory = currentCategory === 'all' || item.category === currentCategory;
     const term = currentSearchTerm.toLowerCase().trim();
-    const matchesSearch = !term || 
+    const matchesSearch = !term ||
       item.title.toLowerCase().includes(term) ||
       item.shortDesc.toLowerCase().includes(term) ||
       item.technologies.some(tech => tech.toLowerCase().includes(term)) ||
@@ -3702,7 +3702,7 @@ function initPortfolioSearch() {
   });
 }
 
-window.resetFilters = function() {
+window.resetFilters = function () {
   currentCategory = 'all';
   currentSearchTerm = '';
   const searchInput = document.getElementById('search-solutions');
@@ -3723,7 +3723,7 @@ function initModalEvents() {
   const closeBtn = document.getElementById('modal-close-btn');
 
   closeBtn?.addEventListener('click', closeServiceModal);
-  
+
   overlay?.addEventListener('click', (e) => {
     if (e.target === overlay) closeServiceModal();
   });
@@ -3740,7 +3740,7 @@ function initModalEvents() {
   });
 }
 
-window.openServiceModal = function(serviceId) {
+window.openServiceModal = function (serviceId) {
   const service = portfolioServices.find(s => s.id === serviceId);
   if (!service) return;
 
@@ -4076,18 +4076,80 @@ function initNavbarScroll() {
 }
 
 function initMobileMenu() {
-  const toggle = document.querySelector('.mobile-toggle');
-  const navMenu = document.querySelector('.nav-menu');
-  const navLinks = document.querySelectorAll('.nav-link');
+  const toggle = document.getElementById('mobile-toggle') || document.querySelector('.mobile-toggle');
+  const navMenu = document.getElementById('nav-menu') || document.querySelector('.nav-menu');
+  const backdrop = document.getElementById('mobile-menu-backdrop');
+  const hamburgerIcon = toggle?.querySelector('.hamburger-icon');
+  const closeIcon = toggle?.querySelector('.close-icon');
+  const navLinks = document.querySelectorAll('.nav-menu .nav-link, .mobile-nav-btn');
+  const mobileAdminBtn = document.getElementById('mobile-menu-admin-btn');
 
-  toggle?.addEventListener('click', () => {
-    navMenu?.classList.toggle('open');
+  function openMobileMenu() {
+    navMenu?.classList.add('open');
+    toggle?.classList.add('active');
+    toggle?.setAttribute('aria-expanded', 'true');
+    backdrop?.classList.add('active');
+    document.body.classList.add('mobile-nav-locked');
+    if (hamburgerIcon && closeIcon) {
+      hamburgerIcon.style.display = 'none';
+      closeIcon.style.display = 'block';
+    }
+  }
+
+  function closeMobileMenu() {
+    navMenu?.classList.remove('open');
+    toggle?.classList.remove('active');
+    toggle?.setAttribute('aria-expanded', 'false');
+    backdrop?.classList.remove('active');
+    document.body.classList.remove('mobile-nav-locked');
+    if (hamburgerIcon && closeIcon) {
+      hamburgerIcon.style.display = 'block';
+      closeIcon.style.display = 'none';
+    }
+  }
+
+  window.closeMobileMenu = closeMobileMenu;
+  window.openMobileMenu = openMobileMenu;
+
+  toggle?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const isOpen = navMenu?.classList.contains('open');
+    if (isOpen) {
+      closeMobileMenu();
+    } else {
+      openMobileMenu();
+    }
   });
+
+  backdrop?.addEventListener('click', closeMobileMenu);
 
   navLinks.forEach(link => {
     link.addEventListener('click', () => {
-      navMenu?.classList.remove('open');
+      closeMobileMenu();
     });
+  });
+
+  mobileAdminBtn?.addEventListener('click', (e) => {
+    e.preventDefault();
+    closeMobileMenu();
+    if (typeof openAdminLoginModal === 'function') {
+      openAdminLoginModal();
+    }
+  });
+
+  // Fechar com tecla Escape
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && navMenu?.classList.contains('open')) {
+      closeMobileMenu();
+      toggle?.focus();
+    }
+  });
+
+  // Ao redimensionar para tela desktop, garante fechamento limpo
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 992 && navMenu?.classList.contains('open')) {
+      closeMobileMenu();
+    }
   });
 }
 
@@ -4112,7 +4174,7 @@ function showToast(message) {
 
 function escapeHtml(str) {
   if (!str) return '';
-  return str.replace(/[&<>'"]/g, 
+  return str.replace(/[&<>'"]/g,
     tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
   );
 }
