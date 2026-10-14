@@ -1,22 +1,14 @@
-FROM nginx:alpine
+FROM node:20-alpine
 
-# Remove configuração padrão do Nginx
-RUN rm -rf /etc/nginx/conf.d/* /usr/share/nginx/html/*
+WORKDIR /app
 
-# Copia configuração customizada
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Copia arquivos da aplicação
+COPY package*.json ./
+COPY . .
 
-# Copia arquivos estáticos da aplicação
-COPY index.html /usr/share/nginx/html/
-COPY style.css /usr/share/nginx/html/
-COPY script.js /usr/share/nginx/html/
-COPY theme.json /usr/share/nginx/html/
-COPY portfolio.json /usr/share/nginx/html/
-COPY content.json /usr/share/nginx/html/
-COPY assets/ /usr/share/nginx/html/assets/
-
-# Expõe a porta 80
+# Define porta padrão para 80 dentro do container
+ENV PORT=80
 EXPOSE 80
 
-# Inicia o Nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Inicia o servidor Node.js
+CMD ["node", "server.js"]

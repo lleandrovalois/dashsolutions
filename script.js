@@ -1272,6 +1272,7 @@ function saveContentToServer(content) {
   clearTimeout(contentSaveTimer);
   contentSaveTimer = setTimeout(async () => {
     try {
+      if (!content.updatedAt) content.updatedAt = new Date().toISOString();
       const res = await fetch('/api/save-content', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -1279,11 +1280,13 @@ function saveContentToServer(content) {
       });
       if (res.ok) {
         console.log('[CMS] Conteúdo geral sincronizado e salvo no servidor (content.json)');
+      } else {
+        console.warn('[CMS] Falha ao salvar conteúdo no servidor:', res.status);
       }
     } catch (err) {
       console.log('[CMS] Modo offline / estático (persiste via localStorage):', err.message);
     }
-  }, 250);
+  }, 100);
 }
 
 // Hook de persistência transparente: qualquer alteração salva em localStorage
@@ -1302,6 +1305,7 @@ function saveContentToServer(content) {
     } else if (key === 'dash_site_content') {
       try {
         const parsed = JSON.parse(val);
+        if (!parsed.updatedAt) parsed.updatedAt = new Date().toISOString();
         saveContentToServer(parsed);
       } catch (e) { }
     }
@@ -1384,10 +1388,29 @@ async function syncPortfolioFromServer() {
 // Sincronização Inteligente de Conteúdo Geral (content.json) na Inicialização
 async function syncContentFromServer() {
   try {
+    const savedRaw = localStorage.getItem('dash_site_content');
+    let localContent = null;
+    if (savedRaw) {
+      try {
+        localContent = JSON.parse(savedRaw);
+      } catch (e) { }
+    }
+
     const res = await fetch('content.json?v=' + Date.now(), { cache: 'no-store' });
     if (res.ok) {
       const serverContent = await res.json();
       if (serverContent && typeof serverContent === 'object') {
+        // Se houver conteúdo local com timestamp mais recente ou igual ao servidor, preserva e sincroniza com o servidor!
+        if (localContent && localContent.updatedAt && serverContent.updatedAt) {
+          const serverTime = new Date(serverContent.updatedAt).getTime();
+          const localTime = new Date(localContent.updatedAt).getTime();
+          if (localTime >= serverTime) {
+            console.log('[CMS] Conteúdo local é mais recente. Sincronizando com o servidor...');
+            saveContentToServer(localContent);
+            return;
+          }
+        }
+
         isSyncingFromServer = true;
         const currentTheme = siteContent.theme;
         siteContent = {
@@ -3027,7 +3050,9 @@ window.saveHeroTextsFromForm = function () {
   siteContent.navCtaText = getVal('hero-form-nav-cta-text', 'edit-nav-cta-text') || defaultSiteContent.navCtaText;
   siteContent.navCtaLink = getVal('hero-form-nav-cta-link', 'edit-nav-cta-link') || defaultSiteContent.navCtaLink;
 
+  siteContent.updatedAt = new Date().toISOString();
   localStorage.setItem('dash_site_content', JSON.stringify(siteContent));
+  saveContentToServer(siteContent);
   applyGeneralTextsToDOM();
   closeHeroTextsModal();
   showToast('Textos e CTAs da Hero salvos com sucesso!');

@@ -23,10 +23,14 @@ const MIME_TYPES = {
 };
 
 const server = http.createServer((req, res) => {
-    // Cabeçalhos CORS padrão
+    // Cabeçalhos CORS e Segurança
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+    res.setHeader('X-Frame-Options', 'SAMEORIGIN');
+    res.setHeader('X-Content-Type-Options', 'nosniff');
+    res.setHeader('X-XSS-Protection', '1; mode=block');
+    res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
 
     if (req.method === 'OPTIONS') {
         res.writeHead(204);
@@ -140,6 +144,12 @@ const server = http.createServer((req, res) => {
 
     fs.stat(filePath, (err, stats) => {
         if (err || !stats.isFile()) {
+            if (!path.extname(filePath)) {
+                const indexPath = path.join(BASE_DIR, 'index.html');
+                res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-cache' });
+                fs.createReadStream(indexPath).pipe(res);
+                return;
+            }
             res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
             res.end('404 - Arquivo não encontrado');
             return;
