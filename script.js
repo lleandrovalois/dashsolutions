@@ -474,7 +474,7 @@ const defaultPortfolioServices = [
     id: "rotinas-backup",
     category: "seguranca",
     categoryLabel: "Segurança & Continuidade",
-    title: "Rotinas de Backup e Disaster Recovery",
+    title: "Rotinas de Backup",
     shortDesc: "Estratégia de backup 3-2-1 à prova de Ransomware com cópias imutáveis, replicação em nuvem e testes periódicos de restauração (RTO e RPO).",
     longDesc: "Dados que não podem ser restaurados rapidamente não são dados protegidos. Estruturamos políticas formais de backup garantindo cópias locais de alta velocidade somadas a réplicas externas em armazenamento em nuvem imutável (Object Lock), impedindo que sequestros de dados destruam o negócio.",
     keyFeatures: [
@@ -487,7 +487,7 @@ const defaultPortfolioServices = [
       "Configuração de servidores e agentes de backup corporativo",
       "Provisionamento de storage local e bucket seguro em nuvem",
       "Homologação de relatórios diários de sucesso com alertas de falhas",
-      "Simulação semestral de Disaster Recovery com emissão de laudo técnico"
+      "Simulação semestral de restauração e continuidade com emissão de laudo técnico"
     ],
     technologies: ["Veeam Backup & Replication", "Bacula Enterprise", "AWS S3 Glacier", "Wasabi Cloud", "Proxmox Backup Server", "Acronis"],
     icon: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>`
@@ -543,12 +543,37 @@ function loadStoredPortfolio() {
   const saved = localStorage.getItem('dash_portfolio_services');
   if (saved) {
     try {
-      return JSON.parse(saved);
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        // Migração de consistência: se o cache local contiver o termo antigo "Disaster Recovery", atualiza automaticamente
+        let cacheUpdated = false;
+        parsed.forEach(item => {
+          if (item.id === 'rotinas-backup') {
+            if (item.title && item.title.includes('Disaster Recovery')) {
+              item.title = "Rotinas de Backup";
+              cacheUpdated = true;
+            }
+            if (item.deliverables && Array.isArray(item.deliverables)) {
+              item.deliverables = item.deliverables.map(d => {
+                if (d.includes('Disaster Recovery')) {
+                  cacheUpdated = true;
+                  return "Simulação semestral de restauração e continuidade com emissão de laudo técnico";
+                }
+                return d;
+              });
+            }
+          }
+        });
+        if (cacheUpdated) {
+          localStorage.setItem('dash_portfolio_services', JSON.stringify(parsed));
+        }
+        return parsed;
+      }
     } catch (e) {
       console.error("Erro ao carregar portfólio salvo:", e);
     }
   }
-  return [...defaultPortfolioServices];
+  return JSON.parse(JSON.stringify(defaultPortfolioServices));
 }
 
 function loadStoredSiteContent() {
@@ -652,6 +677,8 @@ document.addEventListener('DOMContentLoaded', () => {
   populateContactServiceCheckboxes();
   initAdminSystem();
   syncThemeFromServer();
+  syncPortfolioFromServer();
+  syncContentFromServer();
 });
 
 /* ==========================================================================
@@ -1193,6 +1220,9 @@ function getActiveTheme() {
   return siteContent.theme || defaultSiteContent.theme;
 }
 
+// Controle de sincronização para evitar loops de salvamento durante fetch
+let isSyncingFromServer = false;
+
 // Persistência com o Servidor Backend (theme.json)
 async function saveThemeToServer(theme) {
   try {
@@ -1213,6 +1243,70 @@ async function saveThemeToServer(theme) {
   }
   return false;
 }
+
+// Persistência de Portfólio no Servidor (portfolio.json)
+let portfolioSaveTimer = null;
+function savePortfolioToServer(services) {
+  if (isSyncingFromServer) return;
+  clearTimeout(portfolioSaveTimer);
+  portfolioSaveTimer = setTimeout(async () => {
+    try {
+      const res = await fetch('/api/save-portfolio', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(services)
+      });
+      if (res.ok) {
+        console.log('[CMS] Portfólio sincronizado e salvo no servidor (portfolio.json)');
+      }
+    } catch (err) {
+      console.log('[CMS] Modo offline / estático (persiste via localStorage):', err.message);
+    }
+  }, 250);
+}
+
+// Persistência de Conteúdo Geral no Servidor (content.json)
+let contentSaveTimer = null;
+function saveContentToServer(content) {
+  if (isSyncingFromServer) return;
+  clearTimeout(contentSaveTimer);
+  contentSaveTimer = setTimeout(async () => {
+    try {
+      const res = await fetch('/api/save-content', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(content)
+      });
+      if (res.ok) {
+        console.log('[CMS] Conteúdo geral sincronizado e salvo no servidor (content.json)');
+      }
+    } catch (err) {
+      console.log('[CMS] Modo offline / estático (persiste via localStorage):', err.message);
+    }
+  }, 250);
+}
+
+// Hook de persistência transparente: qualquer alteração salva em localStorage
+// é automaticamente espelhada no servidor backend (portfolio.json e content.json)
+(function initStorageAutoPersistence() {
+  if (typeof window === 'undefined' || !window.Storage) return;
+  const origSetItem = Storage.prototype.setItem;
+  Storage.prototype.setItem = function (key, val) {
+    origSetItem.apply(this, arguments);
+    if (isSyncingFromServer) return;
+    if (key === 'dash_portfolio_services') {
+      try {
+        const parsed = JSON.parse(val);
+        savePortfolioToServer(parsed);
+      } catch (e) { }
+    } else if (key === 'dash_site_content') {
+      try {
+        const parsed = JSON.parse(val);
+        saveContentToServer(parsed);
+      } catch (e) { }
+    }
+  };
+})();
 
 // Sincronização Inteligente com theme.json na Inicialização
 async function syncThemeFromServer() {
@@ -1246,9 +1340,12 @@ async function syncThemeFromServer() {
         }
 
         // Se não havia tema no localStorage ou o theme.json do servidor for mais recente:
+        isSyncingFromServer = true;
         siteContent.theme = { ...defaultSiteContent.theme, ...serverTheme };
         currentDraftTheme = { ...siteContent.theme };
         localStorage.setItem('dash_site_content', JSON.stringify(siteContent));
+        isSyncingFromServer = false;
+
         applyTheme(siteContent.theme);
         renderThemePresets();
         populateThemeInputs(siteContent.theme);
@@ -1258,6 +1355,61 @@ async function syncThemeFromServer() {
     }
   } catch (err) {
     console.log('[CMS] Sem conexão com theme.json, usando cache local:', err.message);
+  }
+}
+
+// Sincronização Inteligente de Portfólio (portfolio.json) na Inicialização
+async function syncPortfolioFromServer() {
+  try {
+    const res = await fetch('portfolio.json?v=' + Date.now(), { cache: 'no-store' });
+    if (res.ok) {
+      const serverServices = await res.json();
+      if (Array.isArray(serverServices) && serverServices.length > 0) {
+        isSyncingFromServer = true;
+        portfolioServices = serverServices;
+        localStorage.setItem('dash_portfolio_services', JSON.stringify(portfolioServices));
+        isSyncingFromServer = false;
+
+        renderPortfolioCards();
+        renderCMSPortfolioTable();
+        populateContactServiceCheckboxes();
+        console.log('[CMS] Portfólio sincronizado com sucesso do servidor (portfolio.json):', portfolioServices.length, 'itens');
+      }
+    }
+  } catch (err) {
+    console.log('[CMS] Sem conexão com portfolio.json, usando dados locais:', err.message);
+  }
+}
+
+// Sincronização Inteligente de Conteúdo Geral (content.json) na Inicialização
+async function syncContentFromServer() {
+  try {
+    const res = await fetch('content.json?v=' + Date.now(), { cache: 'no-store' });
+    if (res.ok) {
+      const serverContent = await res.json();
+      if (serverContent && typeof serverContent === 'object') {
+        isSyncingFromServer = true;
+        const currentTheme = siteContent.theme;
+        siteContent = {
+          ...defaultSiteContent,
+          ...serverContent,
+          theme: currentTheme || serverContent.theme || defaultSiteContent.theme
+        };
+        localStorage.setItem('dash_site_content', JSON.stringify(siteContent));
+        isSyncingFromServer = false;
+
+        renderBrandLogo();
+        renderHeroBadges();
+        renderStatsSection();
+        renderAboutSection();
+        renderFrameworkSection();
+        renderHeroCarousel();
+        applyGeneralTextsToDOM();
+        console.log('[CMS] Conteúdo geral sincronizado com sucesso do servidor (content.json)');
+      }
+    }
+  } catch (err) {
+    console.log('[CMS] Sem conexão com content.json, usando dados locais:', err.message);
   }
 }
 
@@ -3500,6 +3652,10 @@ function resetToFactoryDefaults() {
 
     // Restaura e persiste as cores padrão no DOM, localStorage e servidor (theme.json)
     commitAndPersistTheme(defaultSiteContent.theme);
+
+    // Restaura e persiste portfólio e conteúdo padrão no servidor (portfolio.json e content.json)
+    savePortfolioToServer(portfolioServices);
+    saveContentToServer(siteContent);
 
     renderBrandLogo();
     renderStatsSection();

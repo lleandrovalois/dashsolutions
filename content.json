@@ -1,0 +1,224 @@
+{
+  "theme": {
+    "preset": "default",
+    "primaryColor": "#B9915B",
+    "secondaryColor": "#C9A96E",
+    "darkAccent": "#977342",
+    "bgMain": "#001F35",
+    "bgDeep": "#01121E",
+    "bgSurface": "#06263F"
+  },
+  "brand": {
+    "logoType": "monogram",
+    "monogramText": "DS",
+    "logoImageUrl": "",
+    "logoImageHeight": 40,
+    "showName": true,
+    "nameFirst": "DASH",
+    "nameSecond": "SOLUTIONS",
+    "showTagline": true,
+    "tagline": "ENTERPRISE TECHNOLOGY",
+    "footerDesc": "Reunindo engenharia rigorosa, governança e tecnologia de vanguarda para orientar empresas reais que buscam escala sem vulnerabilidades."
+  },
+  "announcementBadge": "EXCLUSIVO",
+  "announcementText": "Excelência em Infraestrutura e Transformação Digital Corporativa |",
+  "announcementLinkText": "Agende um diagnóstico técnico gratuito",
+  "announcementLinkUrl": "#contato",
+  "topCity": "Belém • Pará",
+  "navCtaText": "Falar com Especialista",
+  "navCtaLink": "#contato",
+  "heroTag": "Tecnologia de Alta Performance & Governança",
+  "heroTitle": "Para quem busca <br><span class=\"serif-italic\">robustez, método</span> e escala contínua.",
+  "heroSubtitle": "Unimos engenharia de software de ponta, inteligência artificial aplicada, sustentação de infraestrutura crítica e cibersegurança em um único ecossistema corporativo.",
+  "heroPrimaryCtaText": "Explorar o Portfólio",
+  "heroPrimaryCtaLink": "#portfolio",
+  "heroSecondaryCtaText": "Diagnóstico de TI Gratuito",
+  "heroSecondaryCtaLink": "#contato",
+  "heroBadges": [
+    {
+      "id": "badge-1",
+      "text": "SLA Corporativo 24/7",
+      "icon": "shield"
+    },
+    {
+      "id": "badge-2",
+      "text": "Conformidade ISO & LGPD",
+      "icon": "check"
+    },
+    {
+      "id": "badge-3",
+      "text": "Metodologia Ágil & ITIL 4",
+      "icon": "star"
+    }
+  ],
+  "metrics": [
+    {
+      "id": "m-1",
+      "val": "+99.9%",
+      "label": "Uptime Garantido",
+      "desc": "SLA rigoroso com monitoramento proativo"
+    },
+    {
+      "id": "m-2",
+      "val": "100%",
+      "label": "Gestão Sob Medida",
+      "desc": "Projetos alinhados com metas de faturamento"
+    },
+    {
+      "id": "m-3",
+      "val": "+10 anos",
+      "label": "Experiência Corporativa",
+      "desc": "Liderando infraestrutura em alta complexidade"
+    },
+    {
+      "id": "m-4",
+      "val": "24/7",
+      "label": "Sustentação Crítica",
+      "desc": "Engenheiros prontos para qualquer incidente"
+    }
+  ],
+  "portfolioHeader": {
+    "tag": "PORTFÓLIO COMPLETO",
+    "title": "Soluções Corporativas Dash Solutions",
+    "subtitle": "Cada projeto é tratado como um investimento estratégico. Conheça nossos pilares de entrega tecnológica com metodologia, disciplina e resultados mensuráveis."
+  },
+  "about": {
+    "tag": "SOBRE NÓS",
+    "title": "Tecnologia com visão de negócios e <span class=\"serif-italic\">mentalidade de dono.</span>",
+    "quote": "Não acreditamos em tecnologia pela tecnologia. Acreditamos em sistemas que operam sem falhas, processos que eliminam desperdícios e segurança que protege o futuro da empresa.",
+    "desc": "Nascemos com o propósito de transformar a TI corporativa de um centro de custos reativo em um motor de aceleração e governança para empresas ambiciosas. Unimos expertise em arquitetura de dados e nuvem com a agilidade de desenvolvimento moderno.",
+    "pillars": [
+      {
+        "id": "pillar-1",
+        "num": "01",
+        "title": "Governança e Método Rigoroso",
+        "desc": "Processos baseados em ITIL 4, frameworks ágeis e padrões internacionais de documentação para que a sua empresa nunca fique refém de indivíduos."
+      },
+      {
+        "id": "pillar-2",
+        "num": "02",
+        "title": "Segurança por Design (Zero-Trust)",
+        "desc": "Nenhuma conexão ou usuário é confiado cegamente. Blindagem perimetral, backups imutáveis e resposta imediata a vulnerabilidades."
+      },
+      {
+        "id": "pillar-3",
+        "num": "03",
+        "title": "Inovação Pragmática com IA",
+        "desc": "Implementamos Inteligência Artificial onde ela gera economia palpável e ganho real de velocidade, sem modismos passageiros."
+      }
+    ],
+    "pillar1Num": "01",
+    "pillar1Title": "Governança e Método Rigoroso",
+    "pillar1Desc": "Processos baseados em ITIL 4, frameworks ágeis e padrões internacionais de documentação para que a sua empresa nunca fique refém de indivíduos.",
+    "pillar2Num": "02",
+    "pillar2Title": "Segurança por Design (Zero-Trust)",
+    "pillar2Desc": "Nenhuma conexão ou usuário é confiado cegamente. Blindagem perimetral, backups imutáveis e resposta imediata a vulnerabilidades.",
+    "pillar3Num": "03",
+    "pillar3Title": "Inovação Pragmática com IA",
+    "pillar3Desc": "Implementamos Inteligência Artificial onde ela gera economia palpável e ganho real de velocidade, sem modismos passageiros.",
+    "ecosystemTitle": "Ecossistema Tecnológico Homologado",
+    "ecosystemSubtitle": "Trabalhamos exclusivamente com as tecnologias líderes e mais seguras do mundo:",
+    "technologies": [
+      "Amazon Web Services",
+      "Microsoft Azure",
+      "Google Cloud",
+      "Cisco Networking",
+      "Fortinet NGFW",
+      "Veeam Backup",
+      "Atlassian Jira",
+      "Kubernetes & Docker",
+      "Zabbix & Grafana",
+      "Python & Node.js",
+      "OpenAI / Claude LLMs",
+      "VMware ESXi"
+    ],
+    "certifications": [
+      "✓ ISO/IEC 27001 Aligned",
+      "✓ ITIL 4 Certified",
+      "✓ LGPD Compliant"
+    ]
+  },
+  "framework": {
+    "tag": "NOSSO FRAMEWORK",
+    "title": "Como Entregamos Resultados de <span class=\"serif-italic\">Ponta a Ponta</span>",
+    "subtitle": "Uma esteira disciplinada que garante previsibilidade, clareza e ausência de surpresas no orçamento.",
+    "steps": [
+      {
+        "id": "step-1",
+        "num": "01",
+        "title": "Diagnóstico & Assessment",
+        "desc": "Varredura profunda do parque atual, identificando vulnerabilidades, gargalos de rede e oportunidades imediatas de otimização."
+      },
+      {
+        "id": "step-2",
+        "num": "02",
+        "title": "Arquitetura & Desenho",
+        "desc": "Elaboração da topologia ideal, definição de métricas de SLA, estimativa de custos em nuvem e planejamento de janelas sem downtime."
+      },
+      {
+        "id": "step-3",
+        "num": "03",
+        "title": "Implantação & Hardening",
+        "desc": "Execução técnica com testes de estresse, configuração de segurança, parametrização de ferramentas e capacitação das equipes."
+      },
+      {
+        "id": "step-4",
+        "num": "04",
+        "title": "Sustentação & Evolução 24/7",
+        "desc": "Monitoramento contínuo em tempo real, patches preventivos, relatórios executivos mensais e suporte de engenharia sênior."
+      }
+    ]
+  },
+  "heroCarousel": [
+    {
+      "id": "slide-1",
+      "image": "assets/images/slide1-datacenter.jpg",
+      "badge": "INFRAESTRUTURA & NUVEM",
+      "title": "Centro de Operações NOC/SOC de Alta Performance",
+      "subtitle": "Monitoramento contínuo em tempo real de servidores virtuais, switches corporativos e rotinas automatizadas de backup."
+    },
+    {
+      "id": "slide-2",
+      "image": "assets/images/slide2-software-ai.jpg",
+      "badge": "SOFTWARE & IA",
+      "title": "Engenharia de Software Sob Medida & Modelos de IA",
+      "subtitle": "Aplicações de missão crítica e inteligência artificial generativa integradas à arquitetura do seu negócio."
+    },
+    {
+      "id": "slide-3",
+      "image": "assets/images/slide3-cybersecurity.jpg",
+      "badge": "CIBERSEGURANÇA & CONTINUIDADE",
+      "title": "Firewalls de Próxima Geração & Defesa Zero-Trust",
+      "subtitle": "Proteção perimetral avançada, conformidade rigorosa com a LGPD e resposta imediata a incidentes."
+    }
+  ],
+  "contact": {
+    "tag": "FALE CONOSCO",
+    "title": "Pronto para Elevar o Nível da Sua Tecnologia?",
+    "subtitle": "Agende uma reunião estratégica com nossos arquitetos de soluções. Avaliaremos o cenário da sua empresa e apresentaremos um plano de ação personalizado.",
+    "addressTitle": "Endereço Corporativo",
+    "companyAddress": "Av. Engenheiro Luís Carlos Berrini, 105 - São Paulo, SP",
+    "emailTitle": "E-mail de Contato",
+    "companyEmail": "contato@dashsolutions.com.br",
+    "phoneTitle": "Telefone & WhatsApp",
+    "companyPhone": "+55 (11) 99999-9999",
+    "companyPhoneLink": "https://wa.me/+5591983017799",
+    "formTitle": "Solicite uma Proposta sob Medida",
+    "formSubtitle": "Preencha os campos abaixo. Retornamos em menos de 2 horas em dias úteis.",
+    "formButtonText": "Enviar Solicitação de Diagnóstico"
+  },
+  "footer": {
+    "solutionsTitle": "Principais Soluções",
+    "navTitle": "Navegação",
+    "newsletterTitle": "Radar Tecnológico",
+    "newsletterDesc": "Receba insights executivos sobre tendências de IA, cibersegurança e infraestrutura para negócios.",
+    "newsletterBtnText": "Assinar",
+    "copyrightText": "© 2026 Dash Solutions. Todos os direitos reservados.",
+    "socialLinkedin": "https://linkedin.com",
+    "socialInstagram": "https://instagram.com",
+    "socialYoutube": "https://youtube.com"
+  },
+  "companyAddress": "Av. Engenheiro Luís Carlos Berrini, 105 - São Paulo, SP",
+  "companyEmail": "contato@dashsolutions.com.br",
+  "companyPhone": "+55 (11) 99999-9999"
+}

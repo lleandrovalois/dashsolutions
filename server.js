@@ -68,6 +68,69 @@ const server = http.createServer((req, res) => {
         return;
     }
 
+    // API Endpoint: Salvar Portfólio (Serviços e Soluções)
+    if (req.method === 'POST' && reqUrl === '/api/save-portfolio') {
+        let body = '';
+        req.on('data', chunk => {
+            body += chunk;
+            if (body.length > 2000000) { // 2MB max
+                res.writeHead(413, { 'Content-Type': 'application/json; charset=utf-8' });
+                res.end(JSON.stringify({ success: false, error: 'Payload muito grande' }));
+                req.destroy();
+            }
+        });
+        req.on('end', () => {
+            try {
+                const servicesData = JSON.parse(body);
+                if (!Array.isArray(servicesData)) {
+                    throw new Error('Dados de portfólio inválidos (deve ser um array de serviços)');
+                }
+                const portfolioFilePath = path.join(BASE_DIR, 'portfolio.json');
+                fs.writeFileSync(portfolioFilePath, JSON.stringify(servicesData, null, 2), 'utf-8');
+                console.log(`[CMS] Portfólio salvo com sucesso em portfolio.json (${servicesData.length} itens)`);
+                res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+                res.end(JSON.stringify({ success: true, count: servicesData.length }));
+            } catch (err) {
+                console.error('[CMS] Erro ao salvar portfólio:', err.message);
+                res.writeHead(400, { 'Content-Type': 'application/json; charset=utf-8' });
+                res.end(JSON.stringify({ success: false, error: err.message }));
+            }
+        });
+        return;
+    }
+
+    // API Endpoint: Salvar Conteúdo Geral do Site (Hero, Sobre, Métricas, Framework, Contato, etc.)
+    if (req.method === 'POST' && reqUrl === '/api/save-content') {
+        let body = '';
+        req.on('data', chunk => {
+            body += chunk;
+            if (body.length > 5000000) { // 5MB max (permite imagens em base64 do carrossel)
+                res.writeHead(413, { 'Content-Type': 'application/json; charset=utf-8' });
+                res.end(JSON.stringify({ success: false, error: 'Payload muito grande' }));
+                req.destroy();
+            }
+        });
+        req.on('end', () => {
+            try {
+                const contentData = JSON.parse(body);
+                if (!contentData || typeof contentData !== 'object') {
+                    throw new Error('Dados de conteúdo inválidos (deve ser um objeto)');
+                }
+                contentData.updatedAt = new Date().toISOString();
+                const contentFilePath = path.join(BASE_DIR, 'content.json');
+                fs.writeFileSync(contentFilePath, JSON.stringify(contentData, null, 2), 'utf-8');
+                console.log(`[CMS] Conteúdo geral do site salvo com sucesso em content.json`);
+                res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+                res.end(JSON.stringify({ success: true }));
+            } catch (err) {
+                console.error('[CMS] Erro ao salvar conteúdo do site:', err.message);
+                res.writeHead(400, { 'Content-Type': 'application/json; charset=utf-8' });
+                res.end(JSON.stringify({ success: false, error: err.message }));
+            }
+        });
+        return;
+    }
+
     if (reqUrl === '/') {
         reqUrl = '/index.html';
     }
@@ -85,8 +148,9 @@ const server = http.createServer((req, res) => {
         const ext = path.extname(filePath).toLowerCase();
         const contentType = MIME_TYPES[ext] || 'application/octet-stream';
 
-        // Para theme.json, garante que nunca seja cacheado pelo navegador
-        const cacheControl = path.basename(filePath) === 'theme.json'
+        // Para arquivos JSON do CMS, garante que nunca sejam cacheados pelo navegador
+        const isDynamicJson = ['theme.json', 'portfolio.json', 'content.json'].includes(path.basename(filePath));
+        const cacheControl = isDynamicJson
             ? 'no-cache, no-store, must-revalidate'
             : 'no-cache';
 

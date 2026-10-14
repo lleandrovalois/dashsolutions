@@ -1,0 +1,382 @@
+[
+  {
+    "id": "software-personalizado",
+    "category": "software-ia",
+    "categoryLabel": "Software & IA",
+    "title": "Desenvolvimento de Software Personalizado",
+    "shortDesc": "Sistemas web e mobile de alta complexidade desenvolvidos sob medida para as regras do seu negócio, garantindo escalabilidade, código limpo e alta performance.",
+    "longDesc": "Desenvolvemos plataformas corporativas sob medida utilizando as melhores práticas de engenharia de software do mercado. Desde arquitetura orientada a microsserviços até interfaces ultra responsivas, construímos ativos proprietários para empresas que não aceitam limitações de soluções de prateleira.",
+    "keyFeatures": [
+      "Arquitetura moderna de microsserviços e APIs",
+      "Engenharia orientada a domínio (DDD) e Clean Code",
+      "Pipeline CI/CD automatizado com testes unitários"
+    ],
+    "deliverables": [
+      "Levantamento técnico e desenho de arquitetura de software",
+      "Desenvolvimento ágil (Sprints quinzenais com entregas contínuas)",
+      "Testes automatizados de carga, estresse e segurança",
+      "Documentação técnica completa e transferência de know-how",
+      "Garantia pós-entrega e SLA de sustentação dedicado"
+    ],
+    "technologies": [
+      "Node.js",
+      "Python",
+      "React",
+      "Next.js",
+      "TypeScript",
+      "PostgreSQL",
+      "Docker",
+      "Kubernetes"
+    ],
+    "icon": "<svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><polyline points=\"16 18 22 12 16 6\"></polyline><polyline points=\"8 6 2 12 8 18\"></polyline></svg>"
+  },
+  {
+    "id": "implementacao-ia",
+    "category": "software-ia",
+    "categoryLabel": "Software & IA",
+    "title": "Implementação de IA",
+    "shortDesc": "Integração de Inteligência Artificial generativa, Large Language Models (LLMs) corporativos e agentes autônomos para automatizar decisões e análises complexas.",
+    "longDesc": "Transformamos o potencial da Inteligência Artificial em vantagem competitiva prática. Implementamos sistemas RAG (Retrieval-Augmented Generation) privados para que seus dados internos alimentem respostas assertivas, assistentes executivos e automações cognitivas sem vazamento de informações sensíveis.",
+    "keyFeatures": [
+      "Modelos RAG seguros conectados a bases corporativas",
+      "Agentes autônomos para análise de documentos e relatórios",
+      "Governança, privacidade e compliance com LGPD"
+    ],
+    "deliverables": [
+      "Assessment de casos de uso com maior ROI operacional",
+      "Fine-tuning ou orquestração de LLMs (OpenAI, Claude, Gemini, Llama)",
+      "Integração via APIs seguras com os sistemas legados",
+      "Treinamento de prompts e esteiras de validação humana",
+      "Dashboard de consumo de tokens e mensuração de impacto"
+    ],
+    "technologies": [
+      "LangChain",
+      "OpenAI API",
+      "Anthropic Claude",
+      "Llama 3",
+      "Pinecone",
+      "ChromaDB",
+      "Python",
+      "FastAPI"
+    ],
+    "icon": "<svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M12 2a10 10 0 1 0 10 10H12V2z\"></path><circle cx=\"12\" cy=\"12\" r=\"3\"></circle></svg>"
+  },
+  {
+    "id": "itsm",
+    "category": "governanca",
+    "categoryLabel": "Governança & Gestão",
+    "title": "Implantação de Sistemas de ITSM",
+    "shortDesc": "Estruturação completa de Gestão de Serviços de TI alinhada ao framework ITIL 4, reduzindo tempo de resolução e profissionalizando o atendimento ao usuário.",
+    "longDesc": "Diga adeus a solicitações perdidas em e-mails e mensagens informais. Implementamos centrais de serviços de TI (Service Desk) robustas, com catálogo de serviços, gestão de incidentes, problemas e mudanças, métricas de SLA e automações inteligentes.",
+    "keyFeatures": [
+      "Catálogo de serviços e portal intuitivo de autoatendimento",
+      "Controle de SLAs contratuais e fluxos de aprovação",
+      "Gestão de incidentes, mudanças (RFCs) e base de conhecimento"
+    ],
+    "deliverables": [
+      "Diagnóstico do fluxo operacional atual e maturidade ITIL",
+      "Parametrização completa da plataforma ITSM escolhida",
+      "Criação de esteiras de atendimento (N1, N2 e N3)",
+      "Treinamento operacional para equipes técnicas e usuários",
+      "Relatórios executivos e dashboards de satisfação (CSAT)"
+    ],
+    "technologies": [
+      "Jira Service Management",
+      "GLPI",
+      "Zendesk Support",
+      "Freshservice",
+      "ITIL 4",
+      "ServiceNow"
+    ],
+    "icon": "<svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><line x1=\"4\" y1=\"21\" x2=\"4\" y2=\"14\"></line><line x1=\"4\" y1=\"10\" x2=\"4\" y2=\"3\"></line><line x1=\"12\" y1=\"21\" x2=\"12\" y2=\"12\"></line><line x1=\"12\" y1=\"8\" x2=\"12\" y2=\"3\"></line><line x1=\"20\" y1=\"21\" x2=\"20\" y2=\"16\"></line><line x1=\"20\" y1=\"12\" x2=\"20\" y2=\"3\"></line><circle cx=\"4\" cy=\"12\" r=\"2\"></circle><circle cx=\"12\" cy=\"10\" r=\"2\"></circle><circle cx=\"20\" cy=\"14\" r=\"2\"></circle></svg>"
+  },
+  {
+    "id": "gestao-projetos",
+    "category": "governanca",
+    "categoryLabel": "Governança & Gestão",
+    "title": "Implantação de Gestão de Tarefas e Projetos",
+    "shortDesc": "Organização do fluxo de trabalho das equipes com metodologias ágeis (Scrum, Kanban, OKRs) e implantação das plataformas líderes de mercado.",
+    "longDesc": "Acelere a cadência de entrega da sua organização com alinhamento estratégico e transparência total de ponta a ponta. Estruturamos quadros de tarefas, rituais ágeis, fluxos de validação e relatórios de capacidade de time que eliminam gargalos operacionais.",
+    "keyFeatures": [
+      "Quadros Kanban e Sprints ágeis customizados por setor",
+      "Gestão de capacidade produtiva, prazos e prioridades",
+      "Painéis gerenciais integrados com metas e OKRs da empresa"
+    ],
+    "deliverables": [
+      "Mapeamento de processos e fluxos de valor de cada departamento",
+      "Configuração e automação do software (Jira, ClickUp, Asana)",
+      "Workshops de boas práticas ágeis para líderes e colaboradores",
+      "Integração com ferramentas de comunicação (Slack/Teams)",
+      "Acompanhamento dos primeiros ciclos de entrega para calibragem"
+    ],
+    "technologies": [
+      "Jira Software",
+      "ClickUp",
+      "Asana",
+      "Monday.com",
+      "Notion Enterprise",
+      "Metodologia Ágil (Scrum/Kanban)"
+    ],
+    "icon": "<svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"2\" ry=\"2\"></rect><line x1=\"9\" y1=\"3\" x2=\"9\" y2=\"21\"></line><path d=\"M14 8h4\"></path><path d=\"M14 12h4\"></path><path d=\"M14 16h4\"></path></svg>"
+  },
+  {
+    "id": "gerenciamento-vms",
+    "category": "infra-nuvem",
+    "categoryLabel": "Infraestrutura & Nuvem",
+    "title": "Gerenciamento de VMs (Servidores Virtuais)",
+    "shortDesc": "Orquestração, dimensionamento correto (right-sizing), alta disponibilidade e monitoramento constante de instâncias virtuais em data centers ou nuvem.",
+    "longDesc": "Administramos seu parque de máquinas virtuais garantindo desempenho máximo com o menor custo de computação possível. Realizamos ajustes de memória, CPU, IOPS de disco, snapshots consistentes e balanceamento de carga para evitar qualquer degradação em momentos de pico.",
+    "keyFeatures": [
+      "Right-sizing inteligente para eliminação de custos ociosos",
+      "Clusterização com failover automático e balanceamento",
+      "Gerenciamento de recursos (vCPU, RAM, Storage NVMe)"
+    ],
+    "deliverables": [
+      "Auditoria de capacidade e saúde das máquinas virtuais atuais",
+      "Padronização de imagens base (Golden Images) blindadas",
+      "Automação de rotinas de snapshot e retenção preventiva",
+      "Isolamento de redes virtuais (vSwitches e VPCs)",
+      "Suporte e sustentação de segundo e terceiro nível 24/7"
+    ],
+    "technologies": [
+      "VMware vSphere / ESXi",
+      "Proxmox VE",
+      "Hyper-V",
+      "AWS EC2",
+      "Azure Virtual Machines",
+      "KVM"
+    ],
+    "icon": "<svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><rect x=\"2\" y=\"2\" width=\"20\" height=\"8\" rx=\"2\" ry=\"2\"></rect><rect x=\"2\" y=\"14\" width=\"20\" height=\"8\" rx=\"2\" ry=\"2\"></rect><line x1=\"6\" y1=\"6\" x2=\"6.01\" y2=\"6\"></line><line x1=\"6\" y1=\"18\" x2=\"6.01\" y2=\"18\"></line></svg>"
+  },
+  {
+    "id": "seguranca-informacao",
+    "category": "seguranca",
+    "categoryLabel": "Segurança & Continuidade",
+    "title": "Segurança da Informação",
+    "shortDesc": "Blindagem corporativa ponta a ponta com estratégia Zero-Trust, adequação a normas (LGPD / ISO 27001), pentests e gestão de riscos cibernéticos.",
+    "longDesc": "A segurança da informação não pode ser um obstáculo ao negócio, mas sim um alicerce de confiança. Implementamos políticas estruturadas de controle de acesso, gestão de privilégios mínimos (PAM), proteção de endpoints (EDR/XDR) e planos de resposta a incidentes para salvaguardar os dados críticos da sua empresa.",
+    "keyFeatures": [
+      "Arquitetura Zero-Trust e controle rigoroso de acessos (IAM/PAM)",
+      "Proteção de estações e servidores com EDR/XDR avançado",
+      "Auditoria de vulnerabilidades e testes de intrusão (Pentests)"
+    ],
+    "deliverables": [
+      "Diagnóstico de Maturidade em Cibersegurança (Security Score)",
+      "Política de Segurança da Informação (PSI) e diretrizes LGPD",
+      "Configuração de autenticação multifator obrigatória (MFA)",
+      "Treinamentos de conscientização contra Phishing e engenharia social",
+      "Plano de Resposta a Incidentes e Comitê de Crise"
+    ],
+    "technologies": [
+      "Zero Trust",
+      "EDR / XDR",
+      "Microsoft Defender for Endpoint",
+      "Bitdefender GravityZone",
+      "CrowdStrike",
+      "SIEM / SOC"
+    ],
+    "icon": "<svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z\"></path><path d=\"M9 12l2 2 4-4\"></path></svg>"
+  },
+  {
+    "id": "monitoramento",
+    "category": "infra-nuvem",
+    "categoryLabel": "Infraestrutura & Nuvem",
+    "title": "Monitoramento e Observabilidade",
+    "shortDesc": "Visibilidade em tempo real de toda a infraestrutura física, em nuvem, bancos de dados e aplicações, com alertas preditivos antes de qualquer parada.",
+    "longDesc": "Transformamos dados operacionais dispersos em um centro de comando inteligente. Coletamos métricas de latência, uso de disco, memória, transações por segundo e saúde de links com dashboards gerenciais elegantes e alertas automáticos via WhatsApp, Slack, Teams ou Telegram.",
+    "keyFeatures": [
+      "Observabilidade completa (Métricas, Logs e Traces)",
+      "Alertas proativos multicanal em tempo real",
+      "Dashboards executivos com status de SLA e saúde do negócio"
+    ],
+    "deliverables": [
+      "Instalação e tuning de agentes de monitoramento em todo o parque",
+      "Configuração de thresholds críticos e triggers preditivas",
+      "Criação de painéis no Grafana com visão técnica e gerencial",
+      "Integração de canais de escalonamento para plantão técnico",
+      "Relatórios periódicos de tendências e capacidade (Capacity Planning)"
+    ],
+    "technologies": [
+      "Zabbix",
+      "Grafana",
+      "Prometheus",
+      "Datadog",
+      "Uptime Kuma",
+      "Telegram / Slack Webhooks"
+    ],
+    "icon": "<svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><polyline points=\"22 12 18 12 15 21 9 3 6 12 2 12\"></polyline></svg>"
+  },
+  {
+    "id": "configuracao-switches",
+    "category": "infra-nuvem",
+    "categoryLabel": "Infraestrutura & Nuvem",
+    "title": "Configuração de Switches e Redes",
+    "shortDesc": "Engenharia de rede de alto desempenho, segmentação com VLANs, alta disponibilidade via LACP/STP e controle de qualidade de serviço (QoS).",
+    "longDesc": "A espinha dorsal física de qualquer escritório ou data center exige organização técnica impecável. Configuramos switches gerenciáveis de camada L2/L3 com segmentação rigorosa de tráfego (dados, voz sobre IP, CFTV, visitantes e servidores) para impedir congestionamentos e vazamentos de pacotes.",
+    "keyFeatures": [
+      "Segmentação segura via VLANs e roteamento entre redes",
+      "Prevenção de loops com Spanning Tree Protocol (STP/RSTP)",
+      "Agregação de links (LACP) para dobrar banda e redundância"
+    ],
+    "deliverables": [
+      "Mapeamento da topologia física e lógica existente",
+      "Configuração de portas, trunks, VLANs e QoS prioritário",
+      "Implementação de segurança nas portas (Port Security e 802.1X)",
+      "Atualização de firmwares e rotinas de backup das configurações",
+      "Documentação visual e diagrama de rede em alta resolução"
+    ],
+    "technologies": [
+      "Cisco Catalyst / Meraki",
+      "Aruba Networks",
+      "Ubiquiti UniFi",
+      "MikroTik",
+      "Dell Networking",
+      "VLANs / LACP"
+    ],
+    "icon": "<svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><rect x=\"2\" y=\"6\" width=\"20\" height=\"12\" rx=\"2\"></rect><circle cx=\"6\" cy=\"12\" r=\"1.5\"></circle><circle cx=\"10\" cy=\"12\" r=\"1.5\"></circle><circle cx=\"14\" cy=\"12\" r=\"1.5\"></circle><circle cx=\"18\" cy=\"12\" r=\"1.5\"></circle></svg>"
+  },
+  {
+    "id": "nuvem",
+    "category": "infra-nuvem",
+    "categoryLabel": "Infraestrutura & Nuvem",
+    "title": "Arquitetura e Migração em Nuvem",
+    "shortDesc": "Consultoria estratégica em Cloud Computing (AWS, Azure, GCP), desenho de ambientes híbridos, modernização de cargas e otimização de custos (FinOps).",
+    "longDesc": "Planejamos e executamos a jornada para a nuvem da sua empresa com risco zero de interrupção operacional. Desenhamos ambientes tolerantes a falhas, escaláveis automaticamente e auditados financeiramente para garantir que você pague apenas pelo que realmente consome.",
+    "keyFeatures": [
+      "Migração sem downtime planejado (Lift & Shift ou Re-architecture)",
+      "Práticas de FinOps para redução de fatura em até 40%",
+      "Infraestrutura como Código (Terraform) e ambientes imutáveis"
+    ],
+    "deliverables": [
+      "Cloud Assessment e TCO (Total Cost of Ownership)",
+      "Desenho de arquitetura Well-Architected Framework",
+      "Provisionamento automatizado de redes (VPC, Subnets, VPN Site-to-Site)",
+      "Configuração de políticas de escalonamento automático (Auto-scaling)",
+      "Revisão mensal de custos com recomendações de reservas e savings plans"
+    ],
+    "technologies": [
+      "Amazon Web Services (AWS)",
+      "Microsoft Azure",
+      "Google Cloud Platform (GCP)",
+      "Terraform",
+      "Cloudflare",
+      "Kubernetes"
+    ],
+    "icon": "<svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z\"></path></svg>"
+  },
+  {
+    "id": "firewall",
+    "category": "seguranca",
+    "categoryLabel": "Segurança & Continuidade",
+    "title": "Implantação e Gestão de Firewall",
+    "shortDesc": "Proteção de borda com Firewalls de Próxima Geração (NGFW), inspeção profunda de pacotes (DPI), VPNs corporativas ultrasseguras e filtro de conteúdo.",
+    "longDesc": "Bloqueie invasões, acessos indevidos e tráfego malicioso antes que atinjam sua rede interna. Configuramos appliances e firewalls de alta densidade com regras cirúrgicas de entrada/saída, prevenção contra intrusão (IPS/IDS) e túneis VPN criptografados para trabalho remoto sem riscos.",
+    "keyFeatures": [
+      "Next-Generation Firewall (NGFW) com inspeção profunda SSL/TLS",
+      "VPN IPsec e SSL com autenticação multifator para colaboradores",
+      "Controle de aplicações, bloqueio de ameaças e filtro web por categorias"
+    ],
+    "deliverables": [
+      "Dimensionamento e escolha de hardware ou appliance virtual ideal",
+      "Migração ou elaboração da matriz de regras de segurança de firewall",
+      "Configuração de túneis VPN corporativos matriz-filial e home office",
+      "Ativação de feeds de inteligência de ameaças em tempo real",
+      "Rotinas de backup criptografado das regras e relatórios de bloqueio"
+    ],
+    "technologies": [
+      "Fortinet FortiGate",
+      "pfSense",
+      "OPNsense",
+      "SonicWall",
+      "Palo Alto Networks",
+      "WireGuard / OpenVPN"
+    ],
+    "icon": "<svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><rect x=\"3\" y=\"11\" width=\"18\" height=\"11\" rx=\"2\" ry=\"2\"></rect><path d=\"M7 11V7a5 5 0 0 1 10 0v4\"></path></svg>"
+  },
+  {
+    "id": "rotinas-backup",
+    "category": "seguranca",
+    "categoryLabel": "Segurança & Continuidade",
+    "title": "Rotinas de Backup",
+    "shortDesc": "Estratégia de backup 3-2-1 à prova de Ransomware com cópias imutáveis, replicação em nuvem e testes periódicos de restauração (RTO e RPO).",
+    "longDesc": "Dados que não podem ser restaurados rapidamente não são dados protegidos. Estruturamos políticas formais de backup garantindo cópias locais de alta velocidade somadas a réplicas externas em armazenamento em nuvem imutável (Object Lock), impedindo que sequestros de dados destruam o negócio.",
+    "keyFeatures": [
+      "Metodologia 3-2-1 com imutabilidade real contra ataques de ransomware",
+      "RTO (Tempo de Recuperação) e RPO (Ponto de Recuperação) calculados",
+      "Testes periódicos simulados de desastre com validação de dados"
+    ],
+    "deliverables": [
+      "Mapeamento de ativos críticos e definição de janelas de backup",
+      "Configuração de servidores e agentes de backup corporativo",
+      "Provisionamento de storage local e bucket seguro em nuvem",
+      "Homologação de relatórios diários de sucesso com alertas de falhas",
+      "Simulação semestral de restauração e continuidade com emissão de laudo técnico"
+    ],
+    "technologies": [
+      "Veeam Backup & Replication",
+      "Bacula Enterprise",
+      "AWS S3 Glacier",
+      "Wasabi Cloud",
+      "Proxmox Backup Server",
+      "Acronis"
+    ],
+    "icon": "<svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4\"></path><polyline points=\"7 10 12 15 17 10\"></polyline><line x1=\"12\" y1=\"15\" x2=\"12\" y2=\"3\"></line></svg>"
+  },
+  {
+    "id": "manutencao-servidores",
+    "category": "infra-nuvem",
+    "categoryLabel": "Infraestrutura & Nuvem",
+    "title": "Manutenção de Sistemas e Servidores",
+    "shortDesc": "Sustentação técnica contínua preventiva e corretiva para ambientes Linux e Windows Server, gestão de patches, saúde de hardware e suporte especializado.",
+    "longDesc": "Mantenha seus servidores operando na capacidade máxima sem surpresas de lentidão ou telas azuis. Nossa equipe cuida de toda a rotina de atualizações de segurança (patching), expurgo de logs temporários, otimização de bancos de dados locais e saúde dos discos e controladoras RAID.",
+    "keyFeatures": [
+      "Gestão automatizada de atualizações e patches de segurança do SO",
+      "Diagnóstico e manutenção de arranjos de disco (RAID) e hardware",
+      "Sustentação especializada para sistemas Windows Server e Linux"
+    ],
+    "deliverables": [
+      "Auditoria inicial de integridade do sistema operacional e serviços",
+      "Criação de janelas controladas de manutenção sem impacto aos usuários",
+      "Hardening de portas e serviços não utilizados do sistema",
+      "Controle de logs de eventos e diagnóstico proativo de erros no kernel",
+      "Atendimento prioritário para emergências e suporte de terceiro nível"
+    ],
+    "technologies": [
+      "Windows Server (AD / DNS / File Server)",
+      "Linux (Ubuntu / Debian / RHEL)",
+      "RAID Management",
+      "WSUS",
+      "Ansible"
+    ],
+    "icon": "<svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><path d=\"M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z\"></path></svg>"
+  },
+  {
+    "id": "automatizacao-fluxos",
+    "category": "software-ia",
+    "categoryLabel": "Software & IA",
+    "title": "Automatização de Fluxos e Processos (RPA)",
+    "shortDesc": "Eliminação radical de retrabalho manual integrando ERPs, CRMs, planilhas e canais de atendimento por meio de fluxos automáticos e robôs de software.",
+    "longDesc": "Conecte os sistemas que sua empresa já utiliza e liberte seu time de copiar e colar informações. Construímos automações corporativas integrando bancos de dados, emissão de pedidos, conciliação financeira, onboarding de clientes e notificações automáticas via webhooks e APIs.",
+    "keyFeatures": [
+      "Integração profunda entre ERPs, CRMs e ferramentas de comunicação",
+      "Redução drástica de erros humanos e tempo de ciclo de processos",
+      "Robôs de automação (RPA) operando 24 horas por dia"
+    ],
+    "deliverables": [
+      "Mapeamento das tarefas repetitivas com maior consumo de horas",
+      "Desenho dos diagramas de fluxo de dados e regras de negócio",
+      "Construção das automações e conectores em ambiente seguro",
+      "Tratamento avançado de erros com alertas imediatos de exceções",
+      "Dashboard de horas economizadas e eficiência do pipeline"
+    ],
+    "technologies": [
+      "n8n Enterprise",
+      "Make (Integromat)",
+      "Python Scripts",
+      "Zapier",
+      "REST APIs / Webhooks",
+      "Power Automate"
+    ],
+    "icon": "<svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\"><polygon points=\"13 2 3 14 12 14 11 22 21 10 12 10 13 2\"></polygon></svg>"
+  }
+]
