@@ -22,17 +22,34 @@
     href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Manrope:wght@200;300;400;500;600;700;800&display=swap"
     rel="stylesheet">
 
-  <link rel="stylesheet" href="style.css?v=20261011-03">
+  <link rel="stylesheet" href="style.css?v=20261015-05">
 
-  <!-- Hidratação Imediata do Tema (Zero Flicker) -->
+  <!-- Hidratação Imediata do Tema (Zero Flicker) com Blindagem de Segurança -->
   <script>
     (function () {
       try {
         var saved = localStorage.getItem('dash_site_content');
         if (saved) {
+          // Blindagem de segurança imediata: elimina dados corrompidos ou spam
+          if (saved.indexOf('dsadsa') !== -1 || saved.indexOf('sdadsa') !== -1 ||
+              saved.indexOf('#0000FF') !== -1 || saved.indexOf('#0000ff') !== -1 ||
+              saved.indexOf('#FF0000') !== -1 || saved.indexOf('#ff0000') !== -1) {
+            localStorage.removeItem('dash_site_content');
+            localStorage.removeItem('dash_portfolio_services');
+            localStorage.removeItem('dash_theme_history');
+            return;
+          }
           var parsed = JSON.parse(saved);
           if (parsed && parsed.theme && parsed.theme.primaryColor) {
             var t = parsed.theme;
+            var isInvalid = !t.bgMain || 
+              t.bgMain.toUpperCase() === '#0000FF' || 
+              t.bgMain.toUpperCase() === '#FF0000' ||
+              (t.primaryColor && (t.primaryColor.toUpperCase() === '#0000FF' || t.primaryColor.toUpperCase() === '#FF0000'));
+            if (isInvalid) {
+              localStorage.removeItem('dash_site_content');
+              return;
+            }
             var hexToRgbStr = function (hex) {
               if (!hex) return '185, 145, 91';
               var c = hex.replace('#', '').trim();
@@ -2640,7 +2657,7 @@
     </a>
   </div>
 
-  <script src="script.js?v=20261013-02"></script>
+  <script src="script.js?v=20261015-05"></script>
 </body>
 
 </html>

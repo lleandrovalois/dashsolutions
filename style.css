@@ -73,9 +73,10 @@
 
 html {
   scroll-behavior: smooth;
+  scroll-padding-top: 85px;
   font-size: 16px;
   color-scheme: dark;
-  overflow-x: hidden;
+  overflow-x: clip;
   width: 100%;
   max-width: 100vw;
   -webkit-text-size-adjust: 100%;
@@ -86,7 +87,7 @@ body {
   background-color: var(--deep-dark);
   color: var(--royal-silver);
   line-height: 1.6;
-  overflow-x: hidden;
+  overflow-x: clip;
   width: 100%;
   max-width: 100vw;
   -webkit-font-smoothing: antialiased;
@@ -215,20 +216,21 @@ p {
    HEADER & NAVBAR
    ========================================================================== */
 .site-header {
+  position: -webkit-sticky;
   position: sticky;
   top: 0;
-  z-index: 100;
-  background: rgba(var(--bg-navy-rgb), 0.88);
+  z-index: 1000;
+  background: rgba(var(--bg-navy-rgb), 0.92);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--border-subtle);
-  transition: all var(--transition-smooth);
+  transition: background var(--transition-smooth), border-color var(--transition-smooth), box-shadow var(--transition-smooth), top 0.2s ease;
 }
 
 .site-header.scrolled {
-  background: rgba(var(--bg-deep-rgb), 0.95);
+  background: rgba(var(--bg-deep-rgb), 0.96);
   border-bottom-color: rgba(var(--primary-rgb), 0.3);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
 }
 
 .navbar {

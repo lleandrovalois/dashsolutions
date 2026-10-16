@@ -4,6 +4,20 @@
    Métricas de Autoridade e Seção Sobre Nós Editável
    ========================================================================== */
 
+// Limpeza emergencial de cache corrompido no navegador do visitante
+(function sanitizeClientCacheImmediate() {
+  try {
+    const keys = ['dash_site_content', 'dash_portfolio_services', 'dash_theme_history'];
+    keys.forEach(k => {
+      const v = localStorage.getItem(k);
+      if (v && (v.includes('dsadsa') || v.includes('sdadsa') || v.includes('#0000FF') || v.includes('#0000ff') || v.includes('#FF0000') || v.includes('#ff0000'))) {
+        console.warn(`[CMS Security] Limpando cache corrompido em "${k}"...`);
+        localStorage.removeItem(k);
+      }
+    });
+  } catch (e) {}
+})();
+
 // Configuração Padrão Completa dos Textos e Seções do Site
 const defaultSiteContent = {
   // Tema & Paleta de Cores Oficial (Totalmente Customizável)
@@ -542,6 +556,11 @@ const defaultPortfolioServices = [
 function loadStoredPortfolio() {
   const saved = localStorage.getItem('dash_portfolio_services');
   if (saved) {
+    if (saved.includes('dsadsa') || saved.includes('sdadsa')) {
+      console.warn('[CMS Security] Cache corrompido de serviços detectado. Restaurando portfólio oficial...');
+      localStorage.removeItem('dash_portfolio_services');
+      return JSON.parse(JSON.stringify(defaultPortfolioServices));
+    }
     try {
       const parsed = JSON.parse(saved);
       if (Array.isArray(parsed) && parsed.length > 0) {
@@ -579,6 +598,11 @@ function loadStoredPortfolio() {
 function loadStoredSiteContent() {
   const saved = localStorage.getItem('dash_site_content');
   if (saved) {
+    if (saved.includes('dsadsa') || saved.includes('sdadsa') || saved.includes('#0000FF') || saved.includes('#0000ff') || saved.includes('#FF0000') || saved.includes('#ff0000')) {
+      console.warn('[CMS Security] Cache corrompido de conteúdo detectado. Restaurando conteúdo oficial...');
+      localStorage.removeItem('dash_site_content');
+      return JSON.parse(JSON.stringify(defaultSiteContent));
+    }
     try {
       const parsed = JSON.parse(saved);
 
@@ -614,10 +638,17 @@ function loadStoredSiteContent() {
         ? parsed.heroBadges
         : JSON.parse(JSON.stringify(defaultSiteContent.heroBadges));
 
+      // Proteção de tema
+      let loadedTheme = parsed.theme ? { ...defaultSiteContent.theme, ...parsed.theme } : { ...defaultSiteContent.theme };
+      if (!loadedTheme.bgMain || loadedTheme.bgMain.toUpperCase() === '#0000FF' || loadedTheme.bgMain.toUpperCase() === '#FF0000' ||
+          (loadedTheme.primaryColor && (loadedTheme.primaryColor.toUpperCase() === '#0000FF' || loadedTheme.primaryColor.toUpperCase() === '#FF0000'))) {
+        loadedTheme = { ...defaultSiteContent.theme };
+      }
+
       return {
         ...defaultSiteContent,
         ...parsed,
-        theme: parsed.theme ? { ...defaultSiteContent.theme, ...parsed.theme } : { ...defaultSiteContent.theme },
+        theme: loadedTheme,
         brand: parsed.brand ? { ...defaultSiteContent.brand, ...parsed.brand } : { ...defaultSiteContent.brand },
         heroBadges: heroBadges,
         metrics: metrics,
@@ -1217,18 +1248,32 @@ function hslToHex(h, s, l) {
 }
 
 function getActiveTheme() {
-  return siteContent.theme || defaultSiteContent.theme;
+  const theme = siteContent.theme || defaultSiteContent.theme;
+  const isCorrupt = !theme || !theme.bgMain ||
+    theme.bgMain.toUpperCase() === '#FF0000' ||
+    theme.bgMain.toUpperCase() === '#0000FF' ||
+    (theme.primaryColor && (theme.primaryColor.toUpperCase() === '#FF0000' || theme.primaryColor.toUpperCase() === '#0000FF'));
+  if (isCorrupt) {
+    siteContent.theme = { ...defaultSiteContent.theme };
+    return defaultSiteContent.theme;
+  }
+  return theme;
 }
 
-// Controle de sincronização para evitar loops de salvamento durante fetch
+// Token administrativo e controle de sincronização
+const CMS_ADMIN_TOKEN = 'dash@2026';
 let isSyncingFromServer = false;
 
-// Persistência com o Servidor Backend (theme.json)
+// Persistência com o Servidor Backend (theme.json) - RESTRITO A ADMINISTRADOR
 async function saveThemeToServer(theme) {
+  if (!isUserAdmin()) return false;
   try {
     const res = await fetch('/api/save-theme', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Admin-Token': CMS_ADMIN_TOKEN
+      },
       body: JSON.stringify(theme)
     });
     if (res.ok) {
@@ -1239,43 +1284,49 @@ async function saveThemeToServer(theme) {
       return true;
     }
   } catch (err) {
-    console.log('[CMS] Modo offline / estático (persiste via localStorage):', err.message);
+    console.log('[CMS] Modo offline / estático:', err.message);
   }
   return false;
 }
 
-// Persistência de Portfólio no Servidor (portfolio.json)
+// Persistência de Portfólio no Servidor (portfolio.json) - RESTRITO A ADMINISTRADOR
 let portfolioSaveTimer = null;
 function savePortfolioToServer(services) {
-  if (isSyncingFromServer) return;
+  if (isSyncingFromServer || !isUserAdmin()) return;
   clearTimeout(portfolioSaveTimer);
   portfolioSaveTimer = setTimeout(async () => {
     try {
       const res = await fetch('/api/save-portfolio', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Admin-Token': CMS_ADMIN_TOKEN
+        },
         body: JSON.stringify(services)
       });
       if (res.ok) {
         console.log('[CMS] Portfólio sincronizado e salvo no servidor (portfolio.json)');
       }
     } catch (err) {
-      console.log('[CMS] Modo offline / estático (persiste via localStorage):', err.message);
+      console.log('[CMS] Modo offline / estático:', err.message);
     }
   }, 250);
 }
 
-// Persistência de Conteúdo Geral no Servidor (content.json)
+// Persistência de Conteúdo Geral no Servidor (content.json) - RESTRITO A ADMINISTRADOR
 let contentSaveTimer = null;
 function saveContentToServer(content) {
-  if (isSyncingFromServer) return;
+  if (isSyncingFromServer || !isUserAdmin()) return;
   clearTimeout(contentSaveTimer);
   contentSaveTimer = setTimeout(async () => {
     try {
       if (!content.updatedAt) content.updatedAt = new Date().toISOString();
       const res = await fetch('/api/save-content', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Admin-Token': CMS_ADMIN_TOKEN
+        },
         body: JSON.stringify(content)
       });
       if (res.ok) {
@@ -1284,66 +1335,30 @@ function saveContentToServer(content) {
         console.warn('[CMS] Falha ao salvar conteúdo no servidor:', res.status);
       }
     } catch (err) {
-      console.log('[CMS] Modo offline / estático (persiste via localStorage):', err.message);
+      console.log('[CMS] Modo offline / estático:', err.message);
     }
   }, 100);
 }
 
-// Hook de persistência transparente: qualquer alteração salva em localStorage
-// é automaticamente espelhada no servidor backend (portfolio.json e content.json)
-(function initStorageAutoPersistence() {
-  if (typeof window === 'undefined' || !window.Storage) return;
-  const origSetItem = Storage.prototype.setItem;
-  Storage.prototype.setItem = function (key, val) {
-    origSetItem.apply(this, arguments);
-    if (isSyncingFromServer) return;
-    if (key === 'dash_portfolio_services') {
-      try {
-        const parsed = JSON.parse(val);
-        savePortfolioToServer(parsed);
-      } catch (e) { }
-    } else if (key === 'dash_site_content') {
-      try {
-        const parsed = JSON.parse(val);
-        if (!parsed.updatedAt) parsed.updatedAt = new Date().toISOString();
-        saveContentToServer(parsed);
-      } catch (e) { }
-    }
-  };
-})();
-
 // Sincronização Inteligente com theme.json na Inicialização
 async function syncThemeFromServer() {
   try {
-    // 1. Verifica se já existe um tema salvo pelo usuário no localStorage
-    const savedRaw = localStorage.getItem('dash_site_content');
-    let localTheme = null;
-    if (savedRaw) {
-      try {
-        const parsed = JSON.parse(savedRaw);
-        if (parsed && parsed.theme && parsed.theme.primaryColor) {
-          localTheme = parsed.theme;
-        }
-      } catch (e) { }
-    }
-
     const res = await fetch('theme.json?v=' + Date.now(), { cache: 'no-store' });
     if (res.ok) {
-      const serverTheme = await res.json();
+      let serverTheme = await res.json();
       if (serverTheme && serverTheme.primaryColor) {
-        // Se o usuário já tiver um tema no localStorage, só substitui se o tema do servidor for estritamente mais recente
-        if (localTheme && localTheme.primaryColor) {
-          const serverTime = serverTheme.updatedAt ? new Date(serverTheme.updatedAt).getTime() : 0;
-          const localTime = localTheme.updatedAt ? new Date(localTheme.updatedAt).getTime() : 0;
+        // Blindagem contra tema vermelho ou azul corrompido
+        const isCorrupt = !serverTheme.bgMain ||
+          serverTheme.bgMain.toUpperCase() === '#FF0000' ||
+          serverTheme.bgMain.toUpperCase() === '#0000FF' ||
+          (serverTheme.primaryColor && (serverTheme.primaryColor.toUpperCase() === '#FF0000' || serverTheme.primaryColor.toUpperCase() === '#0000FF'));
 
-          // Se o tema local tem timestamp mais recente ou igual, preserva a escolha do usuário!
-          if (localTime >= serverTime) {
-            console.log('[CMS] Tema local (localStorage) é prioritário. Mantendo:', localTheme.preset || 'custom');
-            return;
-          }
+        if (isCorrupt) {
+          console.warn('[CMS] Tema do servidor contém cor inválida. Forçando padrão oficial.');
+          serverTheme = { ...defaultSiteContent.theme };
         }
 
-        // Se não havia tema no localStorage ou o theme.json do servidor for mais recente:
+        // Se o usuário não for administrador com sessão ativa, tema do servidor é autoridade
         isSyncingFromServer = true;
         siteContent.theme = { ...defaultSiteContent.theme, ...serverTheme };
         currentDraftTheme = { ...siteContent.theme };
@@ -1358,7 +1373,7 @@ async function syncThemeFromServer() {
       }
     }
   } catch (err) {
-    console.log('[CMS] Sem conexão com theme.json, usando cache local:', err.message);
+    console.log('[CMS] Sem conexão com theme.json, usando padrão:', err.message);
   }
 }
 
@@ -1369,6 +1384,11 @@ async function syncPortfolioFromServer() {
     if (res.ok) {
       const serverServices = await res.json();
       if (Array.isArray(serverServices) && serverServices.length > 0) {
+        const rawCheck = JSON.stringify(serverServices);
+        if (rawCheck.includes('dsadsa') || rawCheck.includes('sdadsa')) {
+          console.warn('[CMS Security] Portfólio corrompido no servidor. Usando dados padrão...');
+          return;
+        }
         isSyncingFromServer = true;
         portfolioServices = serverServices;
         localStorage.setItem('dash_portfolio_services', JSON.stringify(portfolioServices));
@@ -1388,36 +1408,42 @@ async function syncPortfolioFromServer() {
 // Sincronização Inteligente de Conteúdo Geral (content.json) na Inicialização
 async function syncContentFromServer() {
   try {
-    const savedRaw = localStorage.getItem('dash_site_content');
-    let localContent = null;
-    if (savedRaw) {
-      try {
-        localContent = JSON.parse(savedRaw);
-      } catch (e) { }
-    }
-
     const res = await fetch('content.json?v=' + Date.now(), { cache: 'no-store' });
     if (res.ok) {
-      const serverContent = await res.json();
+      let serverContent = await res.json();
       if (serverContent && typeof serverContent === 'object') {
-        // Se houver conteúdo local com timestamp mais recente ou igual ao servidor, preserva e sincroniza com o servidor!
-        if (localContent && localContent.updatedAt && serverContent.updatedAt) {
-          const serverTime = new Date(serverContent.updatedAt).getTime();
-          const localTime = new Date(localContent.updatedAt).getTime();
-          if (localTime >= serverTime) {
-            console.log('[CMS] Conteúdo local é mais recente. Sincronizando com o servidor...');
-            saveContentToServer(localContent);
-            return;
-          }
+        const rawCheck = JSON.stringify(serverContent);
+        if (rawCheck.includes('dsadsa') || rawCheck.includes('sdadsa')) {
+          console.warn('[CMS Security] Conteúdo corrompido recebido do servidor. Forçando padrão oficial...');
+          serverContent = { ...defaultSiteContent };
         }
 
         isSyncingFromServer = true;
-        const currentTheme = siteContent.theme;
+        const currentTheme = (siteContent.theme && siteContent.theme.bgMain && siteContent.theme.bgMain.toUpperCase() !== '#0000FF')
+          ? siteContent.theme
+          : defaultSiteContent.theme;
+
         siteContent = {
           ...defaultSiteContent,
           ...serverContent,
-          theme: currentTheme || serverContent.theme || defaultSiteContent.theme
+          theme: currentTheme
         };
+
+        // Blindagem contra tema ou textos corrompidos
+        if (siteContent.theme?.bgMain?.toUpperCase() === '#FF0000' || siteContent.theme?.bgMain?.toUpperCase() === '#0000FF') {
+          siteContent.theme = { ...defaultSiteContent.theme };
+        }
+        if (siteContent.brand?.nameFirst === 'sdadadsa' || siteContent.brand?.nameFirst?.includes('dsadsa') || siteContent.announcementBadge?.includes('dsadsa')) {
+          siteContent.brand = { ...defaultSiteContent.brand };
+          siteContent.announcementBadge = defaultSiteContent.announcementBadge;
+          siteContent.announcementText = defaultSiteContent.announcementText;
+          siteContent.announcementLinkText = defaultSiteContent.announcementLinkText;
+          siteContent.announcementLinkUrl = defaultSiteContent.announcementLinkUrl;
+          siteContent.heroTag = defaultSiteContent.heroTag;
+          siteContent.heroTitle = defaultSiteContent.heroTitle;
+          siteContent.heroSubtitle = defaultSiteContent.heroSubtitle;
+        }
+
         localStorage.setItem('dash_site_content', JSON.stringify(siteContent));
         isSyncingFromServer = false;
 
@@ -4050,14 +4076,15 @@ function initNavbarScroll() {
   const navLinks = document.querySelectorAll('.nav-menu .nav-link');
   const indicator = document.getElementById('nav-indicator');
 
-  let isScrollSpyLocked = false;
+  let isClickScrolling = false;
+  let clickScrollTimer = null;
   let isScrollTicking = false;
 
-  // Função para posicionar o indicador deslizante no link especificado
+  // Função para posicionar o indicador deslizante dourado no link especificado
   function moveIndicatorTo(link, smooth = true) {
     if (!indicator || !navMenu || !link) return;
 
-    // Se estiver em modo mobile (menu empilhado verticalmente), oculta o indicador deslizante
+    // Em visualização mobile / tablet (menu em gaveta vertical), oculta o indicador deslizante desktop
     if (window.innerWidth <= 992) {
       indicator.style.opacity = '0';
       return;
@@ -4065,6 +4092,12 @@ function initNavbarScroll() {
 
     const menuRect = navMenu.getBoundingClientRect();
     const linkRect = link.getBoundingClientRect();
+
+    // Se o elemento ainda não possuir largura mensurável no DOM (ex: antes de layout/fontes)
+    if (linkRect.width === 0) {
+      requestAnimationFrame(() => moveIndicatorTo(link, smooth));
+      return;
+    }
 
     const left = linkRect.left - menuRect.left;
     const width = linkRect.width;
@@ -4085,7 +4118,7 @@ function initNavbarScroll() {
     }
   }
 
-  // Define qual link do menu está ativo
+  // Atualiza classe 'active' nos links e movimenta o indicador
   function setActiveLink(targetId, moveIndicator = true) {
     let matchedLink = null;
     navLinks.forEach(link => {
@@ -4103,62 +4136,79 @@ function initNavbarScroll() {
     }
   }
 
-  // Mapeamento das seções físicas do DOM para os IDs do menu
-  const sectionsToWatch = [
-    { elId: 'home', navId: 'home' },
-    { elId: 'portfolio', navId: 'portfolio' },
-    { elId: 'sobre', navId: 'sobre' },
-    { elId: 'metodologia', navId: 'sobre' }, // A esteira metodológica faz parte da experiência Sobre Nós
-    { elId: 'contato', navId: 'contato' }
+  // Mapeamento das seções para os IDs correspondentes do menu principal
+  const sectionsToTrack = [
+    { id: 'home', navId: 'home' },
+    { id: 'portfolio', navId: 'portfolio' },
+    { id: 'sobre', navId: 'sobre' },
+    { id: 'metodologia', navId: 'sobre' }, // A esteira metodológica faz parte do bloco 'Sobre Nós'
+    { id: 'contato', navId: 'contato' }
   ];
 
-  // ScrollSpy: detecta qual seção está em foco na tela
+  // ScrollSpy de alta precisão: detecta a seção atualmente em foco na tela
   function handleScrollSpy() {
-    if (isScrollSpyLocked) return;
+    if (isClickScrolling) return;
 
-    const scrollY = window.scrollY;
+    const scrollY = window.scrollY || window.pageYOffset;
     const windowHeight = window.innerHeight;
-    const docHeight = document.documentElement.scrollHeight;
-    const headerHeight = header ? header.offsetHeight : 75;
+    const docHeight = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
+    const headerHeight = header ? header.offsetHeight : 80;
 
     // 1. Checa se o usuário chegou próximo ao rodapé da página (ativa Contato)
-    if (windowHeight + scrollY >= docHeight - 80) {
+    if (windowHeight + scrollY >= docHeight - 120) {
       setActiveLink('contato');
       return;
     }
 
     // 2. Se o usuário estiver no topo absoluto, ativa Home
-    if (scrollY < 120) {
+    if (scrollY < 80) {
       setActiveLink('home');
       return;
     }
 
-    // 3. Linha de foco de leitura logo abaixo do cabeçalho fixo
-    const focusLine = scrollY + headerHeight + 120;
+    // 3. Linha focal de leitura (cerca de 35% do espaço visível da tela abaixo do menu fixo)
+    const focusY = headerHeight + (windowHeight - headerHeight) * 0.35;
 
-    let currentNavId = 'home';
-    for (const item of sectionsToWatch) {
-      const sectionEl = document.getElementById(item.elId);
-      if (sectionEl) {
-        const top = sectionEl.offsetTop;
-        if (top <= focusLine) {
-          currentNavId = item.navId;
-        }
+    let bestNavId = null;
+    let maxVisibleHeight = -1;
+
+    for (const item of sectionsToTrack) {
+      const el = document.getElementById(item.id);
+      if (!el) continue;
+      const rect = el.getBoundingClientRect();
+
+      // Checa se a linha focal de leitura está dentro dos limites verticais da seção
+      if (rect.top <= focusY && rect.bottom > focusY) {
+        bestNavId = item.navId;
+        break;
+      }
+
+      // Critério de desempate: seção que ocupa a maior altura visível na viewport
+      const visibleTop = Math.max(rect.top, headerHeight);
+      const visibleBottom = Math.min(rect.bottom, windowHeight);
+      const visibleHeight = Math.max(0, visibleBottom - visibleTop);
+      if (visibleHeight > maxVisibleHeight) {
+        maxVisibleHeight = visibleHeight;
+        bestNavId = item.navId;
       }
     }
 
-    setActiveLink(currentNavId);
+    if (bestNavId) {
+      setActiveLink(bestNavId);
+    }
   }
 
   // Listener de scroll otimizado com requestAnimationFrame
   window.addEventListener('scroll', () => {
-    if (window.scrollY > 40) {
+    const scrollY = window.scrollY || window.pageYOffset;
+
+    if (scrollY > 30) {
       header?.classList.add('scrolled');
     } else {
       header?.classList.remove('scrolled');
     }
 
-    if (window.scrollY > 400) {
+    if (scrollY > 400) {
       scrollTopBtn?.classList.add('visible');
     } else {
       scrollTopBtn?.classList.remove('visible');
@@ -4173,13 +4223,53 @@ function initNavbarScroll() {
     }
   }, { passive: true });
 
+  // Se o usuário interferir manualmente (scroll do mouse ou toque móvel), cancela o travamento de clique
+  ['wheel', 'touchstart'].forEach(evt => {
+    window.addEventListener(evt, () => {
+      if (isClickScrolling) {
+        isClickScrolling = false;
+        clearTimeout(clickScrollTimer);
+      }
+    }, { passive: true });
+  });
+
+  // Função centralizada para rolagem suave até um elemento de destino
+  function scrollToTarget(targetSection, targetId) {
+    isClickScrolling = true;
+    clearTimeout(clickScrollTimer);
+    setActiveLink(targetId, true);
+
+    const headerHeight = header ? header.offsetHeight : 80;
+    const targetY = targetSection.getBoundingClientRect().top + window.scrollY - headerHeight;
+    window.scrollTo({ top: Math.max(0, targetY), behavior: 'smooth' });
+
+    // Monitora a finalização suave da rolagem
+    function onScrollFinish() {
+      clearTimeout(clickScrollTimer);
+      clickScrollTimer = setTimeout(() => {
+        isClickScrolling = false;
+        window.removeEventListener('scroll', onScrollFinish);
+        handleScrollSpy();
+      }, 120);
+    }
+    window.addEventListener('scroll', onScrollFinish, { passive: true });
+
+    // Timeout de segurança caso o destino já esteja visível e não dispare scroll
+    clickScrollTimer = setTimeout(() => {
+      isClickScrolling = false;
+      window.removeEventListener('scroll', onScrollFinish);
+      handleScrollSpy();
+    }, 1200);
+  }
+
   // Botão flutuante "Voltar ao Topo"
   scrollTopBtn?.addEventListener('click', () => {
-    isScrollSpyLocked = true;
+    isClickScrolling = true;
+    clearTimeout(clickScrollTimer);
     setActiveLink('home', true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
     setTimeout(() => {
-      isScrollSpyLocked = false;
+      isClickScrolling = false;
       handleScrollSpy();
     }, 800);
   });
@@ -4187,16 +4277,17 @@ function initNavbarScroll() {
   // Clique na Logo do Topo (rola suave para Home)
   document.getElementById('header-brand-logo')?.addEventListener('click', (e) => {
     e.preventDefault();
-    isScrollSpyLocked = true;
+    isClickScrolling = true;
+    clearTimeout(clickScrollTimer);
     setActiveLink('home', true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
     setTimeout(() => {
-      isScrollSpyLocked = false;
+      isClickScrolling = false;
       handleScrollSpy();
     }, 800);
   });
 
-  // Clique nos Links do Menu com rolagem suave e posicionamento instantâneo
+  // Clique nos Links do Menu principal
   navLinks.forEach(link => {
     link.addEventListener('click', (e) => {
       const href = link.getAttribute('href');
@@ -4205,22 +4296,12 @@ function initNavbarScroll() {
         const targetSection = document.getElementById(targetId);
         if (targetSection) {
           e.preventDefault();
-          isScrollSpyLocked = true;
-          setActiveLink(targetId, true);
-
-          const headerHeight = header ? header.offsetHeight : 75;
-          const targetY = targetSection.getBoundingClientRect().top + window.scrollY - headerHeight + 5;
-          window.scrollTo({ top: Math.max(0, targetY), behavior: 'smooth' });
-
-          setTimeout(() => {
-            isScrollSpyLocked = false;
-            handleScrollSpy();
-          }, 850);
+          scrollToTarget(targetSection, targetId);
         }
       }
     });
 
-    // Hover interativo: o indicador desliza suavemente até o item apontado pelo mouse
+    // Hover interativo no desktop
     link.addEventListener('mouseenter', () => {
       if (window.innerWidth > 992) {
         moveIndicatorTo(link, true);
@@ -4228,23 +4309,22 @@ function initNavbarScroll() {
     });
   });
 
-  // Rolagem suave para todos os botões e links CTA com âncora (#)
+  // Rolagem suave para todos os botões e links CTA externos com âncora (#)
   document.querySelectorAll('a[href^="#"]:not(.nav-link):not(.brand-logo)').forEach(btn => {
     btn.addEventListener('click', (e) => {
       const href = btn.getAttribute('href');
       if (href && href.length > 1 && href.startsWith('#')) {
-        const targetSection = document.getElementById(href.substring(1));
+        const targetId = href.substring(1);
+        const targetSection = document.getElementById(targetId);
         if (targetSection) {
           e.preventDefault();
-          const headerHeight = header ? header.offsetHeight : 75;
-          const targetY = targetSection.getBoundingClientRect().top + window.scrollY - headerHeight + 5;
-          window.scrollTo({ top: Math.max(0, targetY), behavior: 'smooth' });
+          scrollToTarget(targetSection, targetId === 'metodologia' ? 'sobre' : targetId);
         }
       }
     });
   });
 
-  // Ao remover o mouse do menu, o indicador retorna suavemente para a seção ativa atual
+  // Retorno do indicador ao sair do menu com o ponteiro do mouse
   navMenu?.addEventListener('mouseleave', () => {
     if (window.innerWidth > 992) {
       const activeLink = document.querySelector('.nav-menu .nav-link.active');
@@ -4254,7 +4334,7 @@ function initNavbarScroll() {
     }
   });
 
-  // Recalcula as posições do indicador em redimensionamentos de tela
+  // Recalcula as posições do indicador em caso de redimensionamento da janela
   window.addEventListener('resize', () => {
     const activeLink = document.querySelector('.nav-menu .nav-link.active');
     if (activeLink) {
@@ -4262,23 +4342,34 @@ function initNavbarScroll() {
     }
   });
 
-  // Inicializa o indicador após o carregamento inicial
-  setTimeout(() => {
+  // Inicialização e sincronização do indicador
+  function refreshIndicatorInitial() {
+    // Se a URL contiver hash correspondente a uma seção (ex: #portfolio), sincroniza
+    if (window.location.hash) {
+      const hashId = window.location.hash.substring(1);
+      const matched = sectionsToTrack.find(s => s.id === hashId);
+      if (matched) {
+        setActiveLink(matched.navId, false);
+      }
+    }
+
     handleScrollSpy();
     const activeLink = document.querySelector('.nav-menu .nav-link.active');
     if (activeLink) {
       moveIndicatorTo(activeLink, false);
     }
-  }, 100);
+  }
 
-  // Recalcula após o carregamento das fontes do navegador
+  // Sincroniza em múltiplos estágios para cobrir layout, imagens e carregamento de fontes
+  refreshIndicatorInitial();
+  setTimeout(refreshIndicatorInitial, 60);
+  setTimeout(refreshIndicatorInitial, 250);
+  setTimeout(refreshIndicatorInitial, 600);
+
+  window.addEventListener('load', refreshIndicatorInitial);
+
   if (document.fonts) {
-    document.fonts.ready.then(() => {
-      const activeLink = document.querySelector('.nav-menu .nav-link.active');
-      if (activeLink) {
-        moveIndicatorTo(activeLink, false);
-      }
-    });
+    document.fonts.ready.then(refreshIndicatorInitial);
   }
 }
 

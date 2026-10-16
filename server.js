@@ -40,8 +40,32 @@ const server = http.createServer((req, res) => {
 
     let reqUrl = decodeURI(req.url.split('?')[0]);
 
+    const ADMIN_TOKEN = 'dash@2026';
+
+    function requireAdminAuth(req, res) {
+        const token = req.headers['x-admin-token'];
+        if (token !== ADMIN_TOKEN) {
+            console.warn(`[CMS Security] Acesso negado a ${req.method} ${req.url}: Token administrativo inválido ou ausente`);
+            res.writeHead(401, { 'Content-Type': 'application/json; charset=utf-8' });
+            res.end(JSON.stringify({ success: false, error: 'Acesso negado: Autenticação administrativa necessária.' }));
+            return false;
+        }
+        return true;
+    }
+
+    function safeBackupFile(filePath) {
+        try {
+            if (fs.existsSync(filePath)) {
+                fs.copyFileSync(filePath, filePath + '.bak');
+            }
+        } catch (e) {
+            console.error('[CMS] Erro ao criar backup:', filePath, e.message);
+        }
+    }
+
     // API Endpoint: Salvar Tema de Cores do CMS
     if (req.method === 'POST' && reqUrl === '/api/save-theme') {
+        if (!requireAdminAuth(req, res)) return;
         let body = '';
         req.on('data', chunk => {
             body += chunk;
@@ -57,8 +81,15 @@ const server = http.createServer((req, res) => {
                 if (!themeData || typeof themeData !== 'object' || !themeData.primaryColor) {
                     throw new Error('Objeto de tema inválido (requer primaryColor)');
                 }
+                const forbidden = ['#0000FF', '#FF0000', '#0000FE', '#FE0000', 'BLUE', 'RED'];
+                const bgMain = (themeData.bgMain || '').trim().toUpperCase();
+                const primary = (themeData.primaryColor || '').trim().toUpperCase();
+                if (forbidden.includes(bgMain) || forbidden.includes(primary)) {
+                    throw new Error('Cores puras inválidas detectadas (#0000FF / #FF0000). Rejeitado por segurança.');
+                }
                 themeData.updatedAt = new Date().toISOString();
                 const themeFilePath = path.join(BASE_DIR, 'theme.json');
+                safeBackupFile(themeFilePath);
                 fs.writeFileSync(themeFilePath, JSON.stringify(themeData, null, 2), 'utf-8');
                 console.log(`[CMS] Tema salvo com sucesso em theme.json:`, themeData.preset || 'custom', themeData.primaryColor);
                 res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
@@ -74,6 +105,7 @@ const server = http.createServer((req, res) => {
 
     // API Endpoint: Salvar Portfólio (Serviços e Soluções)
     if (req.method === 'POST' && reqUrl === '/api/save-portfolio') {
+        if (!requireAdminAuth(req, res)) return;
         let body = '';
         req.on('data', chunk => {
             body += chunk;
@@ -85,11 +117,15 @@ const server = http.createServer((req, res) => {
         });
         req.on('end', () => {
             try {
+                if (body.includes('dsadsadsa') || body.includes('sdadadsa')) {
+                    throw new Error('Conteúdo spam/dummy detectado no portfólio. Rejeitado por segurança.');
+                }
                 const servicesData = JSON.parse(body);
-                if (!Array.isArray(servicesData)) {
-                    throw new Error('Dados de portfólio inválidos (deve ser um array de serviços)');
+                if (!Array.isArray(servicesData) || servicesData.length === 0) {
+                    throw new Error('Dados de portfólio inválidos (deve ser um array não vazio de serviços)');
                 }
                 const portfolioFilePath = path.join(BASE_DIR, 'portfolio.json');
+                safeBackupFile(portfolioFilePath);
                 fs.writeFileSync(portfolioFilePath, JSON.stringify(servicesData, null, 2), 'utf-8');
                 console.log(`[CMS] Portfólio salvo com sucesso em portfolio.json (${servicesData.length} itens)`);
                 res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
@@ -105,6 +141,7 @@ const server = http.createServer((req, res) => {
 
     // API Endpoint: Salvar Conteúdo Geral do Site (Hero, Sobre, Métricas, Framework, Contato, etc.)
     if (req.method === 'POST' && reqUrl === '/api/save-content') {
+        if (!requireAdminAuth(req, res)) return;
         let body = '';
         req.on('data', chunk => {
             body += chunk;
@@ -116,12 +153,16 @@ const server = http.createServer((req, res) => {
         });
         req.on('end', () => {
             try {
+                if (body.includes('dsadsadsa') || body.includes('sdadadsa')) {
+                    throw new Error('Conteúdo spam/dummy detectado (dsadsa...). Rejeitado por segurança.');
+                }
                 const contentData = JSON.parse(body);
                 if (!contentData || typeof contentData !== 'object') {
                     throw new Error('Dados de conteúdo inválidos (deve ser um objeto)');
                 }
                 contentData.updatedAt = new Date().toISOString();
                 const contentFilePath = path.join(BASE_DIR, 'content.json');
+                safeBackupFile(contentFilePath);
                 fs.writeFileSync(contentFilePath, JSON.stringify(contentData, null, 2), 'utf-8');
                 console.log(`[CMS] Conteúdo geral do site salvo com sucesso em content.json`);
                 res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
