@@ -1,0 +1,28 @@
+steps:
+  # 1. Compilação da imagem Docker da Dash Solutions
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', '$_REGION-docker.pkg.dev/$PROJECT_ID/dash-repo/dash-web:$SHORT_SHA', '-t', '$_REGION-docker.pkg.dev/$PROJECT_ID/dash-repo/dash-web:latest', '.']
+
+  # 2. Envio das tags para o Google Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', '$_REGION-docker.pkg.dev/$PROJECT_ID/dash-repo/dash-web:$SHORT_SHA']
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', '$_REGION-docker.pkg.dev/$PROJECT_ID/dash-repo/dash-web:latest']
+
+  # 3. Deploy contínuo no Google Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - 'dash-solutions'
+      - '--image=$_REGION-docker.pkg.dev/$PROJECT_ID/dash-repo/dash-web:$SHORT_SHA'
+      - '--region=$_REGION'
+      - '--platform=managed'
+
+substitutions:
+  _REGION: southamerica-east1
+
+options:
+  logging: CLOUD_LOGGING_ONLY

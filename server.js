@@ -109,7 +109,7 @@ const server = http.createServer((req, res) => {
         let body = '';
         req.on('data', chunk => {
             body += chunk;
-            if (body.length > 2000000) { // 2MB max
+            if (body.length > 10000000) { // 10MB max
                 res.writeHead(413, { 'Content-Type': 'application/json; charset=utf-8' });
                 res.end(JSON.stringify({ success: false, error: 'Payload muito grande' }));
                 req.destroy();
@@ -117,9 +117,6 @@ const server = http.createServer((req, res) => {
         });
         req.on('end', () => {
             try {
-                if (body.includes('dsadsadsa') || body.includes('sdadadsa')) {
-                    throw new Error('Conteúdo spam/dummy detectado no portfólio. Rejeitado por segurança.');
-                }
                 const servicesData = JSON.parse(body);
                 if (!Array.isArray(servicesData) || servicesData.length === 0) {
                     throw new Error('Dados de portfólio inválidos (deve ser um array não vazio de serviços)');
@@ -145,7 +142,7 @@ const server = http.createServer((req, res) => {
         let body = '';
         req.on('data', chunk => {
             body += chunk;
-            if (body.length > 5000000) { // 5MB max (permite imagens em base64 do carrossel)
+            if (body.length > 30000000) { // 30MB max (permite logo e fotos em base64)
                 res.writeHead(413, { 'Content-Type': 'application/json; charset=utf-8' });
                 res.end(JSON.stringify({ success: false, error: 'Payload muito grande' }));
                 req.destroy();
@@ -153,12 +150,12 @@ const server = http.createServer((req, res) => {
         });
         req.on('end', () => {
             try {
-                if (body.includes('dsadsadsa') || body.includes('sdadadsa')) {
-                    throw new Error('Conteúdo spam/dummy detectado (dsadsa...). Rejeitado por segurança.');
-                }
                 const contentData = JSON.parse(body);
                 if (!contentData || typeof contentData !== 'object') {
                     throw new Error('Dados de conteúdo inválidos (deve ser um objeto)');
+                }
+                if (contentData.heroTitle && (contentData.heroTitle.includes('dsadsa') || contentData.heroTitle.includes('sdadsa'))) {
+                    throw new Error('Conteúdo spam/dummy detectado no título.');
                 }
                 contentData.updatedAt = new Date().toISOString();
                 const contentFilePath = path.join(BASE_DIR, 'content.json');

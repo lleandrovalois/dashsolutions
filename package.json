@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "node server.js"
+    "dev": "node server.js",
+    "build:pdf": "node build-pdf.js"
   },
   "keywords": [
     "portfolio",
@@ -13,5 +14,8 @@
     "dash-solutions"
   ],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "marked": "^18.1.1"
+  }
 }

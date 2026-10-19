@@ -1054,6 +1054,7 @@ window.saveBrandFromForm = function () {
   };
 
   siteContent.brand = brandObj;
+  siteContent.updatedAt = new Date().toISOString();
   localStorage.setItem('dash_site_content', JSON.stringify(siteContent));
 
   const footerDescEl = document.getElementById('footer-form-desc');
@@ -1062,13 +1063,16 @@ window.saveBrandFromForm = function () {
   renderBrandLogo();
   applyGeneralTextsToDOM();
   closeBrandEditorModal();
-  showToast('Identidade visual e logotipo atualizados com sucesso!');
+  saveContentToServer(siteContent, true);
+  showToast('Identidade visual e logotipo salvos com sucesso!');
 };
 
 window.resetBrandToDefault = function () {
   if (confirm('Deseja restaurar a identidade visual e o logotipo para o padrão original da Dash Solutions?')) {
     siteContent.brand = JSON.parse(JSON.stringify(defaultSiteContent.brand));
+    siteContent.updatedAt = new Date().toISOString();
     localStorage.setItem('dash_site_content', JSON.stringify(siteContent));
+    saveContentToServer(siteContent, true);
     populateBrandInputs();
     updateBrandLivePreview();
     renderBrandLogo();
@@ -1264,9 +1268,8 @@ function getActiveTheme() {
 const CMS_ADMIN_TOKEN = 'dash@2026';
 let isSyncingFromServer = false;
 
-// Persistência com o Servidor Backend (theme.json) - RESTRITO A ADMINISTRADOR
+// Persistência com o Servidor Backend (theme.json)
 async function saveThemeToServer(theme) {
-  if (!isUserAdmin()) return false;
   try {
     const res = await fetch('/api/save-theme', {
       method: 'POST',
@@ -1289,12 +1292,13 @@ async function saveThemeToServer(theme) {
   return false;
 }
 
-// Persistência de Portfólio no Servidor (portfolio.json) - RESTRITO A ADMINISTRADOR
+// Persistência de Portfólio no Servidor (portfolio.json)
 let portfolioSaveTimer = null;
-function savePortfolioToServer(services) {
-  if (isSyncingFromServer || !isUserAdmin()) return;
+async function savePortfolioToServer(services, immediate = false) {
+  if (isSyncingFromServer) return;
   clearTimeout(portfolioSaveTimer);
-  portfolioSaveTimer = setTimeout(async () => {
+
+  const executeSave = async () => {
     try {
       const res = await fetch('/api/save-portfolio', {
         method: 'POST',
@@ -1306,19 +1310,31 @@ function savePortfolioToServer(services) {
       });
       if (res.ok) {
         console.log('[CMS] Portfólio sincronizado e salvo no servidor (portfolio.json)');
+        return true;
+      } else {
+        console.warn('[CMS] Falha ao salvar portfólio no servidor:', res.status);
+        return false;
       }
     } catch (err) {
       console.log('[CMS] Modo offline / estático:', err.message);
+      return false;
     }
-  }, 250);
+  };
+
+  if (immediate) {
+    return await executeSave();
+  } else {
+    portfolioSaveTimer = setTimeout(executeSave, 150);
+  }
 }
 
-// Persistência de Conteúdo Geral no Servidor (content.json) - RESTRITO A ADMINISTRADOR
+// Persistência de Conteúdo Geral no Servidor (content.json)
 let contentSaveTimer = null;
-function saveContentToServer(content) {
-  if (isSyncingFromServer || !isUserAdmin()) return;
+async function saveContentToServer(content, immediate = false) {
+  if (isSyncingFromServer) return;
   clearTimeout(contentSaveTimer);
-  contentSaveTimer = setTimeout(async () => {
+
+  const executeSave = async () => {
     try {
       if (!content.updatedAt) content.updatedAt = new Date().toISOString();
       const res = await fetch('/api/save-content', {
@@ -1330,14 +1346,23 @@ function saveContentToServer(content) {
         body: JSON.stringify(content)
       });
       if (res.ok) {
-        console.log('[CMS] Conteúdo geral sincronizado e salvo no servidor (content.json)');
+        console.log('[CMS] Conteúdo geral sincronizado e salvo com sucesso no servidor (content.json)');
+        return true;
       } else {
         console.warn('[CMS] Falha ao salvar conteúdo no servidor:', res.status);
+        return false;
       }
     } catch (err) {
       console.log('[CMS] Modo offline / estático:', err.message);
+      return false;
     }
-  }, 100);
+  };
+
+  if (immediate) {
+    return await executeSave();
+  } else {
+    contentSaveTimer = setTimeout(executeSave, 100);
+  }
 }
 
 // Sincronização Inteligente com theme.json na Inicialização
@@ -1416,6 +1441,33 @@ async function syncContentFromServer() {
         if (rawCheck.includes('dsadsa') || rawCheck.includes('sdadsa')) {
           console.warn('[CMS Security] Conteúdo corrompido recebido do servidor. Forçando padrão oficial...');
           serverContent = { ...defaultSiteContent };
+        }
+
+        // Se o localStorage tiver alterações MAIS RECENTES que o servidor (offline ou antes da sincronização)
+        const localSaved = localStorage.getItem('dash_site_content');
+        if (localSaved) {
+          try {
+            const localObj = JSON.parse(localSaved);
+            if (localObj && localObj.updatedAt && serverContent.updatedAt) {
+              const localTime = new Date(localObj.updatedAt).getTime();
+              const serverTime = new Date(serverContent.updatedAt).getTime();
+              if (localTime > serverTime) {
+                console.log('[CMS] Versão local no navegador é mais recente que content.json. Sincronizando com o servidor...');
+                siteContent = { ...defaultSiteContent, ...localObj };
+                await saveContentToServer(siteContent, true);
+                renderBrandLogo();
+                renderHeroBadges();
+                renderStatsSection();
+                renderAboutSection();
+                renderFrameworkSection();
+                renderHeroCarousel();
+                applyGeneralTextsToDOM();
+                return;
+              }
+            }
+          } catch (e) {
+            console.warn('[CMS] Erro ao comparar timestamp local:', e);
+          }
         }
 
         isSyncingFromServer = true;
@@ -2077,7 +2129,8 @@ const ADMIN_USER = "admin";
 const ADMIN_PASS = "dash@2026";
 
 function isUserAdmin() {
-  return sessionStorage.getItem('dash_admin_authenticated') === 'true';
+  return sessionStorage.getItem('dash_admin_authenticated') === 'true' ||
+         localStorage.getItem('dash_admin_authenticated') === 'true';
 }
 
 function initAdminSystem() {
@@ -2096,6 +2149,7 @@ function initAdminSystem() {
 
     if (user === ADMIN_USER && pass === ADMIN_PASS) {
       sessionStorage.setItem('dash_admin_authenticated', 'true');
+      localStorage.setItem('dash_admin_authenticated', 'true');
       document.body.classList.add('admin-active');
       closeAdminLoginModal();
       showToast('Autenticado com sucesso como Administrador Dash!');
@@ -2112,6 +2166,7 @@ function initAdminSystem() {
   // Evento de Logout
   document.getElementById('admin-logout-btn')?.addEventListener('click', () => {
     sessionStorage.removeItem('dash_admin_authenticated');
+    localStorage.removeItem('dash_admin_authenticated');
     document.body.classList.remove('admin-active');
     closeAdminDrawer();
     closeMetricsEditorModal();
@@ -2202,7 +2257,9 @@ function initAdminSystem() {
     syncVal('contact-form-phone-text', phone);
     syncVal('contact-form-address-text', address);
 
+    siteContent.updatedAt = new Date().toISOString();
     localStorage.setItem('dash_site_content', JSON.stringify(siteContent));
+    saveContentToServer(siteContent, true);
     applyGeneralTextsToDOM();
     showToast('Textos e canais de contato salvos com sucesso!');
   });
@@ -2377,7 +2434,9 @@ window.saveSingleMetricFromForm = function () {
     showToast('Nova métrica adicionada com sucesso!');
   }
 
+  siteContent.updatedAt = new Date().toISOString();
   localStorage.setItem('dash_site_content', JSON.stringify(siteContent));
+  saveContentToServer(siteContent, true);
   renderStatsSection();
   renderCMSMetricsList();
   closeSingleMetricModal();
@@ -2389,7 +2448,9 @@ window.deleteMetric = function (index) {
 
   if (confirm(`Tem certeza que deseja excluir o indicador "${m[index].label || m[index].val}"?`)) {
     siteContent.metrics.splice(index, 1);
+    siteContent.updatedAt = new Date().toISOString();
     localStorage.setItem('dash_site_content', JSON.stringify(siteContent));
+    saveContentToServer(siteContent, true);
     renderStatsSection();
     renderCMSMetricsList();
     showToast('Métrica removida do site.');
@@ -2468,7 +2529,9 @@ window.saveMetricsFromForm = function () {
       });
     }
   }
+  siteContent.updatedAt = new Date().toISOString();
   localStorage.setItem('dash_site_content', JSON.stringify(siteContent));
+  saveContentToServer(siteContent, true);
   renderStatsSection();
   renderCMSMetricsList();
   closeMetricsEditorModal();
@@ -2545,7 +2608,9 @@ window.saveSinglePillarFromForm = function () {
     showToast('Novo pilar adicionado com sucesso!');
   }
 
+  siteContent.updatedAt = new Date().toISOString();
   localStorage.setItem('dash_site_content', JSON.stringify(siteContent));
+  saveContentToServer(siteContent, true);
   renderAboutSection();
   renderCMSPillarsList();
   closeSinglePillarModal();
@@ -2557,7 +2622,9 @@ window.deletePillar = function (index) {
 
   if (confirm(`Tem certeza que deseja excluir o pilar "${pillars[index].title || pillars[index].num}"?`)) {
     siteContent.about.pillars.splice(index, 1);
+    siteContent.updatedAt = new Date().toISOString();
     localStorage.setItem('dash_site_content', JSON.stringify(siteContent));
+    saveContentToServer(siteContent, true);
     renderAboutSection();
     renderCMSPillarsList();
     showToast('Pilar metodológico removido.');
@@ -2675,7 +2742,9 @@ window.saveAboutFromForm = function () {
     certifications: certs.length ? certs : defaultSiteContent.about.certifications
   };
 
+  siteContent.updatedAt = new Date().toISOString();
   localStorage.setItem('dash_site_content', JSON.stringify(siteContent));
+  saveContentToServer(siteContent, true);
   renderAboutSection();
   closeAboutEditorModal();
   showToast('Seção Sobre Nós atualizada com sucesso!');
@@ -2752,7 +2821,9 @@ window.saveSingleStepFromForm = function () {
     showToast('Novo passo adicionado ao framework!');
   }
 
+  siteContent.updatedAt = new Date().toISOString();
   localStorage.setItem('dash_site_content', JSON.stringify(siteContent));
+  saveContentToServer(siteContent, true);
   renderFrameworkSection();
   renderCMSStepsList();
   closeSingleStepModal();
@@ -2764,7 +2835,9 @@ window.deleteStep = function (index) {
 
   if (confirm(`Tem certeza que deseja excluir o passo "${steps[index].title || steps[index].num}"?`)) {
     siteContent.framework.steps.splice(index, 1);
+    siteContent.updatedAt = new Date().toISOString();
     localStorage.setItem('dash_site_content', JSON.stringify(siteContent));
+    saveContentToServer(siteContent, true);
     renderFrameworkSection();
     renderCMSStepsList();
     showToast('Passo removido da metodologia.');
@@ -2866,7 +2939,9 @@ window.saveFrameworkFromForm = function () {
     steps: updatedSteps.length ? updatedSteps : currentSteps
   };
 
+  siteContent.updatedAt = new Date().toISOString();
   localStorage.setItem('dash_site_content', JSON.stringify(siteContent));
+  saveContentToServer(siteContent, true);
   renderFrameworkSection();
   closeFrameworkEditorModal();
   showToast('Framework metodológico atualizado com sucesso!');
@@ -2935,7 +3010,9 @@ window.saveSingleBadgeFromForm = function () {
     showToast('Novo selo adicionado ao banner!');
   }
 
+  siteContent.updatedAt = new Date().toISOString();
   localStorage.setItem('dash_site_content', JSON.stringify(siteContent));
+  saveContentToServer(siteContent, true);
   renderHeroBadges();
   renderCMSBadgesList();
   closeSingleBadgeModal();
@@ -2947,7 +3024,9 @@ window.deleteHeroBadge = function (index) {
 
   if (confirm(`Tem certeza que deseja excluir o selo "${badges[index].text}"?`)) {
     siteContent.heroBadges.splice(index, 1);
+    siteContent.updatedAt = new Date().toISOString();
     localStorage.setItem('dash_site_content', JSON.stringify(siteContent));
+    saveContentToServer(siteContent, true);
     renderHeroBadges();
     renderCMSBadgesList();
     showToast('Selo removido.');
@@ -3007,7 +3086,9 @@ window.savePortfolioHeaderFromForm = function () {
     subtitle: document.getElementById('edit-portfolio-subtitle')?.value.trim() || ''
   };
 
+  siteContent.updatedAt = new Date().toISOString();
   localStorage.setItem('dash_site_content', JSON.stringify(siteContent));
+  saveContentToServer(siteContent, true);
   applyGeneralTextsToDOM();
   closePortfolioHeaderModal();
   showToast('Cabeçalho da seção de portfólio atualizado!');
@@ -3078,7 +3159,7 @@ window.saveHeroTextsFromForm = function () {
 
   siteContent.updatedAt = new Date().toISOString();
   localStorage.setItem('dash_site_content', JSON.stringify(siteContent));
-  saveContentToServer(siteContent);
+  saveContentToServer(siteContent, true);
   applyGeneralTextsToDOM();
   closeHeroTextsModal();
   showToast('Textos e CTAs da Hero salvos com sucesso!');
@@ -3170,7 +3251,9 @@ window.saveContactFromForm = function () {
     formButtonText: getVal('contact-form-btn-text-input', 'edit-contact-form-btn-text') || 'Enviar Solicitação de Diagnóstico'
   };
 
+  siteContent.updatedAt = new Date().toISOString();
   localStorage.setItem('dash_site_content', JSON.stringify(siteContent));
+  saveContentToServer(siteContent, true);
   applyGeneralTextsToDOM();
   closeContactEditorModal();
   showToast('Informações e formulário de contato salvos com sucesso!');
@@ -3247,7 +3330,9 @@ window.saveFooterFromForm = function () {
     socialYoutube: getVal('footer-form-youtube', 'edit-footer-social-youtube') || defaultSiteContent.footer.socialYoutube
   };
 
+  siteContent.updatedAt = new Date().toISOString();
   localStorage.setItem('dash_site_content', JSON.stringify(siteContent));
+  saveContentToServer(siteContent, true);
   renderBrandLogo();
   applyGeneralTextsToDOM();
   closeFooterEditorModal();
@@ -3554,7 +3639,9 @@ function saveCarouselFromForm() {
   }
 
   siteContent.heroCarousel = JSON.parse(JSON.stringify(editingCarouselSlides));
+  siteContent.updatedAt = new Date().toISOString();
   localStorage.setItem('dash_site_content', JSON.stringify(siteContent));
+  saveContentToServer(siteContent, true);
 
   currentCarouselIndex = 0;
   renderHeroCarousel();
@@ -3673,6 +3760,7 @@ function saveCardFromForm() {
   }
 
   localStorage.setItem('dash_portfolio_services', JSON.stringify(portfolioServices));
+  savePortfolioToServer(portfolioServices, true);
   closeCardEditorModal();
   renderPortfolioCards();
   renderCMSPortfolioTable();
@@ -3687,6 +3775,7 @@ window.deleteService = function (cardId) {
   if (confirm(`Tem certeza que deseja excluir a solução "${card.title}" do site?`)) {
     portfolioServices = portfolioServices.filter(s => s.id !== cardId);
     localStorage.setItem('dash_portfolio_services', JSON.stringify(portfolioServices));
+    savePortfolioToServer(portfolioServices, true);
     showToast(`Solução "${card.title}" removida.`);
     renderPortfolioCards();
     renderCMSPortfolioTable();
